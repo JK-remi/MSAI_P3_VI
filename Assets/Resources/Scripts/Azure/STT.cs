@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class STT : MonoBehaviour
 {
-    private const string SPEECH_KEY = "3fbb90529e274dbbafc58c6af1056ca1";
+    private const string SPEECH_KEY = "62cd9483d3bc4c7f9da3f66b0802194e";   // bb345e7abc36447bafffe249ffdb1192
 
     private const int HEADER_SIZE = 44;
     private const string FILE_NAME = "STT_attack.wav";

@@ -62,11 +62,11 @@ public class GPT_Data
 
 public class GPT : MonoBehaviour
 {
-    private const string ENDPOINT = "https://b09-openai.openai.azure.com/";
-    private const string API_KEY = "97ef0f16a9564062b3ddcfd16ca4695c";
-    private const string DEPLOY_NAME = "gpt-4o";
-    private const string SEARCH_ENDPOINT = "https://b09-aisearch.search.windows.net";
-    private const string SEARCH_KEY = "VOPEXNMh6hDlwuGOZhZr1Ne7AJWQyLyU6u9G16t2PkAzSeDcxCfL";
+    private const string ENDPOINT = "https://australia-project3-team2.openai.azure.com/";
+    private const string API_KEY = "fdaf9c4d80e34b3f8e0d9b5b71386f01";
+    private const string DEPLOY_NAME = "australia-project3-team2-gpt-4o";
+    private const string SEARCH_ENDPOINT = "https://project3team2.search.windows.net";
+    private const string SEARCH_KEY = "LOEoj43mzzihlze2MGY6UpuFjc6ViomJd6DD2f8x51AzSeBrEGd9";
     private const string END_WORD = "im_end";
     private string RAG_MODEL = "b09_c2";
     private string SYSTEM_MSG = @"
@@ -86,6 +86,9 @@ public class GPT : MonoBehaviour
     [HideInInspector]
     public TextMeshProUGUI uiText;
     private bool isProgress = false;
+
+    [SerializeField]
+    private bool isRAG = false;
 
     private void Start()
     {
@@ -108,9 +111,12 @@ public class GPT : MonoBehaviour
         GPT_Data data = new GPT_Data();
         //data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
         data.messages.Add(new GPT_Message("user", prompt));
-        data.azureSearchEndpoint = SEARCH_ENDPOINT;
-        data.azureSearchKey = SEARCH_KEY;
-        data.azureSearchIndexName = RAG_MODEL;
+        if(isRAG)
+        {
+            data.azureSearchEndpoint = SEARCH_ENDPOINT;
+            data.azureSearchKey = SEARCH_KEY;
+            data.azureSearchIndexName = RAG_MODEL;
+        }
         GPT_DataSrc dataSrc = new GPT_DataSrc();
         GPT_Params gptParams = new GPT_Params();
         gptParams.endpoint = SEARCH_ENDPOINT;

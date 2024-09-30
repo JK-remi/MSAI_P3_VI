@@ -9,7 +9,7 @@ public class TTS : MonoBehaviour
     private const string FILE_NAME = "TTS";
     private const string TOKEN_URL = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken";
     private const string TTS_URL = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1";
-    private const string API_KEY = "3fbb90529e274dbbafc58c6af1056ca1";   // 8e5931bade634c4e859a8e7544f87ff7
+    private const string API_KEY = "62cd9483d3bc4c7f9da3f66b0802194e";   // bb345e7abc36447bafffe249ffdb1192
     private const int AUDIO_FREQUENCEY = 24000;     // "X-Microsoft-OutputFormat", "riff-24khz-16bit-mono-pcm"
 
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice
