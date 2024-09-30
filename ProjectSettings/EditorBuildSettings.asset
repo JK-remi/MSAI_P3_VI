@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Resources/Scenes/TTS_test.unity
+    guid: 5e02f4d6be1791547856a0bc3b8a8fe6
   m_configObjects: {}

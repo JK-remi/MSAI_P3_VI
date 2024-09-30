@@ -7,9 +7,9 @@ using UnityEngine.Networking;
 public class TTS : MonoBehaviour
 {
     private const string FILE_NAME = "TTS";
-    private const string TOKEN_URL = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-    private const string TTS_URL = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1";
-    private const string API_KEY = "62cd9483d3bc4c7f9da3f66b0802194e";   // bb345e7abc36447bafffe249ffdb1192
+    private const string TOKEN_URL = "https://westus2.api.cognitive.microsoft.com/sts/v1.0/issueToken";
+    private const string TTS_URL = "https://westus2.tts.speech.microsoft.com/cognitiveservices/v1";
+    private const string API_KEY = "98defb0377cb42c991972d124c669fa3";   // 21927e7758d342648689304ce6955808
     private const int AUDIO_FREQUENCEY = 24000;     // "X-Microsoft-OutputFormat", "riff-24khz-16bit-mono-pcm"
 
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice
@@ -28,6 +28,11 @@ public class TTS : MonoBehaviour
 
     [HideInInspector]
     public AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private IEnumerator GetToken()
     {
@@ -84,7 +89,7 @@ public class TTS : MonoBehaviour
         {
             Debug.Log("Success!");
 
-            //string filepath = Path.Combine(Application.persistentDataPath, FILE_NAME+".wav");
+            //string filepath = Path.Combine(Application.persistentDataPath, FILE_NAME + ".wav");
             //File.WriteAllBytes(filepath, request.downloadHandler.data);
 
             audioSource.clip = Byte2AudioClip(request.downloadHandler.data);
