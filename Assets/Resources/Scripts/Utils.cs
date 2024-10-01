@@ -16,6 +16,15 @@ public class Utils
         return filpath;
     }
 
+    public static string SubString(string target, string sub, int offset)
+    {
+        int idx = target.IndexOf(sub);
+        if (idx < 0) return string.Empty;
+
+        string r = target.Substring(idx+offset);
+        return r;
+    }
+
     public static string SubJsonString(string target, string s, string e, int sOffset = 0, int eOffset = 0)
     {
         int startIdx = target.IndexOf(s);

@@ -9,17 +9,17 @@ public class TTS : MonoBehaviour
     private const string FILE_NAME = "TTS";
     private const string TOKEN_URL = "https://westus2.api.cognitive.microsoft.com/sts/v1.0/issueToken";
     private const string TTS_URL = "https://westus2.tts.speech.microsoft.com/cognitiveservices/v1";
-    private const string API_KEY = "98defb0377cb42c991972d124c669fa3";   // 21927e7758d342648689304ce6955808
+    private const string API_KEY = "ae7b95c9067549e5b0f28cb9f4a72544";   // 1f8394e0f667401bb5c783e09b7c6f30
     private const int AUDIO_FREQUENCEY = 24000;     // "X-Microsoft-OutputFormat", "riff-24khz-16bit-mono-pcm"
 
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice
-    private const string VOICE_NAME = "en-US-EmmaNeural";
-    private const string VOICE_ROLE = "SeniorFemale";
-    private const string VOICE_STYLE = "disgruntled";
-    private const string VOICE_STYLE_DEG = "2";  // 0.01 ~ 2
-    private const string PROSODY_FITCH = "high";
-    private const string PROSODY_RATE = "+20.00%";
-    private const string PROSODY_VOL = "+20.00%";
+    private string VOICE_NAME = "en-US-EmmaNeural";
+    private string VOICE_ROLE = "SeniorFemale";
+    private string VOICE_STYLE = "disgruntled";
+    private string VOICE_STYLE_DEG = "2";  // 0.01 ~ 2
+    private string PROSODY_PITCH = "high";
+    private string PROSODY_RATE = "+20.00%";
+    private string PROSODY_VOL = "+20.00%";
 
     [SerializeField]
     private string line;
@@ -66,7 +66,7 @@ public class TTS : MonoBehaviour
             "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"" + Utils.LANGUAGE + "\">" +
                 "<voice name=\"" + VOICE_NAME + "\">" +
                     "<mstts:express-as role=\"" + VOICE_ROLE + "\" style=\"" + VOICE_STYLE + "\" styledegree=\"" + VOICE_STYLE_DEG + "\">" +
-                        "<prosody pitch=\"" + PROSODY_FITCH + "\" rate=\"" + PROSODY_RATE + "\" volume=\"" + PROSODY_VOL + "\">" +
+                        "<prosody pitch=\"" + PROSODY_PITCH + "\" rate=\"" + PROSODY_RATE + "\" volume=\"" + PROSODY_VOL + "\">" +
                             line +
                         "</prosody>" +
                     "</mstts:express-as>" +
@@ -150,5 +150,16 @@ public class TTS : MonoBehaviour
     public void OnChangeLine(TMP_InputField input)
     {
         line = input.text;
+    }
+
+    public void SetVoice(string name, string role, string style, float fitch, float rate, float vol)
+    {
+        VOICE_NAME = name;
+        VOICE_ROLE = role;
+        VOICE_STYLE = style;
+        //VOICE_STYLE_DEG = "2";  // 0.01 ~ 2
+        PROSODY_PITCH = string.Format("{0:00}%", fitch * 100);
+        PROSODY_RATE = string.Format("{0:00}%", rate * 100);
+        PROSODY_VOL = string.Format("{0:00}%", vol * 100);
     }
 }
