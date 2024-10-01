@@ -644,6 +644,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1226709450}
     m_Modifications:
+    - target: {fileID: 80217785840800942, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: apiKey
+      value: AIzaSyBSpXdAfU6mLnmRRk3pPn-UqrQMW7gETeU
+      objectReference: {fileID: 0}
     - target: {fileID: 1126065015127424763, guid: b126f0401e47546449834780e4612071, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -651,6 +655,18 @@ PrefabInstance:
     - target: {fileID: 1126065015127424763, guid: b126f0401e47546449834780e4612071, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3239683893650495582, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_ChildScaleWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3239683893650495582, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_ChildControlHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3239683893650495582, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_ChildForceExpandHeight
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3241622458571440346, guid: b126f0401e47546449834780e4612071, type: 3}
       propertyPath: m_Pivot.x
