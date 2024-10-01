@@ -11,7 +11,6 @@ public class YouTubeChat : MonoBehaviour
     public string apiKey = "AIzaSyASpLRFVN1dx_uACO039EQf6JTw44fd7BM"; // 발급받은 API 키를 입력하세요.
     public string videoId = "80BCd_EKWm8"; // 라이브 스트림의 비디오 ID를 입력하세요.
 
-    public Transform chatContent;
     public GameObject chatMessagePrefab;
     public ScrollRect scrollRect; // ScrollRect 변수를 추가
 
@@ -130,13 +129,7 @@ public class YouTubeChat : MonoBehaviour
             return;
         }
 
-        if (chatContent == null)
-        {
-            Debug.LogError("chatContent가 설정되지 않았습니다.");
-            return;
-        }
-
-        GameObject newMessage = Instantiate(chatMessagePrefab, chatContent);
+        GameObject newMessage = Instantiate(chatMessagePrefab, scrollRect.content.transform);
 
         var textComponent = newMessage.GetComponent<TMP_Text>();
         if (textComponent == null)
