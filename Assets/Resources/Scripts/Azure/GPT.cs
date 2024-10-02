@@ -60,11 +60,20 @@ public class GPT_Data
 
 }
 
+public class GPT_SimpleData
+{
+    public List<GPT_Message> messages = new List<GPT_Message>(1);
+    public float temperature = 0.7f;
+    public float top_p = 0.95f;
+    public int max_tokens = 800;
+}
+
+
 public class GPT : MonoBehaviour
 {
-    private const string ENDPOINT = "https://australia-project3-team2.openai.azure.com/";
-    private const string API_KEY = "fdaf9c4d80e34b3f8e0d9b5b71386f01";
-    private const string DEPLOY_NAME = "australia-project3-team2-gpt-4o";
+    private const string ENDPOINT = "https://eastus-project3-team2.openai.azure.com/";
+    private const string API_KEY = "3eef2399ffdb4aad8a1d577f41d0f348";
+    private const string DEPLOY_NAME = "project3-team2-gpt-4o";
     private const string SEARCH_ENDPOINT = "https://project3team2.search.windows.net";
     private const string SEARCH_KEY = "LOEoj43mzzihlze2MGY6UpuFjc6ViomJd6DD2f8x51AzSeBrEGd9";
     private const string END_WORD = "im_end";
@@ -108,28 +117,42 @@ public class GPT : MonoBehaviour
         uiText.text = "대사를 생성중입니다...\n잠시만 기다려 주세요.";
         // json 전송 참고
         // https://kumgo1d.tistory.com/entry/Unity-HttpWebRequest%EC%99%80-JsonUtility%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EC%97%AC-%EC%9B%B9-%EC%84%9C%EB%B2%84%EC%99%80-%ED%86%B5%EC%8B%A0%ED%95%98%EA%B3%A0-POST-%EB%B0%A9%EC%8B%9D%EC%9C%BC%EB%A1%9C-json-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
-        GPT_Data data = new GPT_Data();
-        //data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
-        data.messages.Add(new GPT_Message("user", prompt));
+
+        string strBody = "";// = JsonUtility.ToJson(data);
         if(isRAG)
         {
+            GPT_Data data = new GPT_Data();
+            data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
+            data.messages.Add(new GPT_Message("user", prompt));
+
             data.azureSearchEndpoint = SEARCH_ENDPOINT;
             data.azureSearchKey = SEARCH_KEY;
             data.azureSearchIndexName = RAG_MODEL;
+
+            GPT_DataSrc dataSrc = new GPT_DataSrc();
+            GPT_Params gptParams = new GPT_Params();
+            gptParams.endpoint = SEARCH_ENDPOINT;
+            gptParams.index_name = RAG_MODEL;
+            gptParams.role_information = SYSTEM_MSG;
+            GPT_Authentication auth = new GPT_Authentication();
+            auth.key = SEARCH_KEY;
+            gptParams.authentication = auth;
+            gptParams.key = SEARCH_KEY;
+            gptParams.indexName = RAG_MODEL;
+            dataSrc.parameters = gptParams;
+
+            data.data_sources.Add(dataSrc);
+
+            strBody = JsonUtility.ToJson(data);
         }
-        GPT_DataSrc dataSrc = new GPT_DataSrc();
-        GPT_Params gptParams = new GPT_Params();
-        gptParams.endpoint = SEARCH_ENDPOINT;
-        gptParams.index_name = RAG_MODEL;
-        gptParams.role_information = SYSTEM_MSG;
-        GPT_Authentication auth = new GPT_Authentication();
-        auth.key = SEARCH_KEY;
-        gptParams.authentication = auth;
-        gptParams.key = SEARCH_KEY;
-        gptParams.indexName = RAG_MODEL;
-        dataSrc.parameters = gptParams;
-        data.data_sources.Add(dataSrc);
-        string strBody = JsonUtility.ToJson(data);
+        else
+        {
+            GPT_SimpleData data = new GPT_SimpleData();
+            data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
+            data.messages.Add(new GPT_Message("user", prompt));
+
+            strBody = JsonUtility.ToJson(data);
+        }
         var bytes = System.Text.Encoding.UTF8.GetBytes(strBody);
 
         string url = string.Format("{0}/openai/deployments/{1}/chat/completions?api-version=2024-02-15-preview", ENDPOINT, DEPLOY_NAME);
@@ -144,8 +167,13 @@ public class GPT : MonoBehaviour
 
         if(request.result == UnityWebRequest.Result.Success)
         {
-            const string subContent = "\"content\"";
-            const string subRole = "\"end_turn\"";
+            string subContent = "\"content\"";
+            string subRole = "\"role\"";
+            if(isRAG)
+            {
+                subRole = "\"end_turn\"";
+            }
+
             string response = Utils.SubJsonString(request.downloadHandler.text, subContent, subRole, subContent.Length + 2, 2);
             response = Utils.DecodeEncodedNonAsciiCharacters(response);
             if(response != string.Empty)
