@@ -14,6 +14,8 @@ public class YouTubeChat : MonoBehaviour
     private string videoId = "80BCd_EKWm8"; // 라이브 스트림의 비디오 ID를 입력하세요.
 
     public GameObject panelVideoID;
+    public TextMeshProUGUI txtName;
+    public TextMeshProUGUI txtMessage;
 
     public GameObject chatMessagePrefab;
     public ScrollRect scrollRect; // ScrollRect 변수를 추가
