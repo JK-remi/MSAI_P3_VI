@@ -9,7 +9,9 @@ using UnityEngine.UI; // ScrollRect를 사용하기 위해 필요
 public class YouTubeChat : MonoBehaviour
 {
     public string apiKey = "AIzaSyASpLRFVN1dx_uACO039EQf6JTw44fd7BM"; // 발급받은 API 키를 입력하세요.
-    public string videoId = "80BCd_EKWm8"; // 라이브 스트림의 비디오 ID를 입력하세요.
+    private string videoId = "80BCd_EKWm8"; // 라이브 스트림의 비디오 ID를 입력하세요.
+
+    public GameObject panelVideoID;
 
     public GameObject chatMessagePrefab;
     public ScrollRect scrollRect; // ScrollRect 변수를 추가
@@ -17,9 +19,27 @@ public class YouTubeChat : MonoBehaviour
     private string liveChatId;
     private string nextPageToken;
 
-    void Start()
+    private Coroutine corLiveChat = null;
+
+    private void OnDisable()
     {
-        StartCoroutine(GetLiveChatId());
+        Reset();
+    }
+
+    private void OnDestroy()
+    {
+        Reset();
+    }
+
+    private void Reset()
+    {
+        if (corLiveChat != null)
+        {
+            StopCoroutine(corLiveChat);
+            corLiveChat = null;
+        }
+
+        if (panelVideoID != null) panelVideoID.SetActive(true);
     }
 
     IEnumerator GetLiveChatId()
@@ -150,6 +170,20 @@ public class YouTubeChat : MonoBehaviour
         else
         {
             Debug.LogError("scrollRect가 설정되지 않았습니다.");
+        }
+    }
+
+    public void SetVideoID(TMP_InputField input)
+    {
+        if (input == null) return;
+
+        videoId = input.text;
+
+        if(corLiveChat == null)
+        {
+            corLiveChat = StartCoroutine(GetLiveChatId());
+
+            if (panelVideoID != null) panelVideoID.SetActive(false);
         }
     }
 }
