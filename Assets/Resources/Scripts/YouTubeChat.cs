@@ -8,7 +8,9 @@ using UnityEngine.UI; // ScrollRect를 사용하기 위해 필요
 
 public class YouTubeChat : MonoBehaviour
 {
-    public string apiKey = "AIzaSyASpLRFVN1dx_uACO039EQf6JTw44fd7BM"; // 발급받은 API 키를 입력하세요.
+    [SerializeField]
+    private string apiKey = "AIzaSyASpLRFVN1dx_uACO039EQf6JTw44fd7BM"; // 발급받은 API 키를 입력하세요.
+    [SerializeField]
     private string videoId = "80BCd_EKWm8"; // 라이브 스트림의 비디오 ID를 입력하세요.
 
     public GameObject panelVideoID;
@@ -177,9 +179,12 @@ public class YouTubeChat : MonoBehaviour
     {
         if (input == null) return;
 
-        videoId = input.text;
+        if(input.text != string.Empty)
+        {
+            videoId = input.text;
+        }
 
-        if(corLiveChat == null)
+        if (corLiveChat == null)
         {
             corLiveChat = StartCoroutine(GetLiveChatId());
 
