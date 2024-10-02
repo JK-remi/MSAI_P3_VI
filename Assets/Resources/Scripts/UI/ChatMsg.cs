@@ -16,6 +16,6 @@ public class ChatMsg : MonoBehaviour
     public void OnClicked()
     {
         string msg = Utils.SubString(txtMessage.text, ":", 1);
-        Debug.Log(msg);
+        GameManager.Instance.Send2GPT(msg);
     }
 }
