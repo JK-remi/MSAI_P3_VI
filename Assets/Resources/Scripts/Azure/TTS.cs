@@ -9,7 +9,7 @@ public class TTS : MonoBehaviour
     private const string FILE_NAME = "TTS";
     private const string TOKEN_URL = "https://westus2.api.cognitive.microsoft.com/sts/v1.0/issueToken";
     private const string TTS_URL = "https://westus2.tts.speech.microsoft.com/cognitiveservices/v1";
-    private const string API_KEY = "ae7b95c9067549e5b0f28cb9f4a72544";   // 1f8394e0f667401bb5c783e09b7c6f30
+    private const string API_KEY = "1ff2d7a7379b4e349aa1734718de89fc";   // 57d50f60f0aa4712a266501ca97e9ebb
     private const int AUDIO_FREQUENCEY = 24000;     // "X-Microsoft-OutputFormat", "riff-24khz-16bit-mono-pcm"
 
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice
@@ -54,7 +54,7 @@ public class TTS : MonoBehaviour
         else
         {
             Debug.LogError(request.error);
-            //GameManager.Instance.TtsFinish(2f);
+            GameManager.Instance.TtsFinish(2f);
         }
     }
 
@@ -94,12 +94,12 @@ public class TTS : MonoBehaviour
 
             audioSource.clip = Byte2AudioClip(request.downloadHandler.data);
             audioSource.Play();
-            //GameManager.Instance.TtsFinish(audioSource.clip.length);
+            GameManager.Instance.TtsFinish(audioSource.clip.length);
         }
         else
         {
             Debug.LogError(request.error);
-            //GameManager.Instance.TtsFinish(2f);
+            GameManager.Instance.TtsFinish(2f);
         }
     }
 

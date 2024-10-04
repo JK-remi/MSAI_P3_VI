@@ -78,6 +78,7 @@ public class GPT : MonoBehaviour
     private const string SEARCH_KEY = "LOEoj43mzzihlze2MGY6UpuFjc6ViomJd6DD2f8x51AzSeBrEGd9";
     private const string END_WORD = "im_end";
     private string RAG_MODEL = "b09_c2";
+    [SerializeField]
     private string SYSTEM_MSG = @"
 너는 인어공주 연극을 하는 봇이야. 
 인덱스 데이터를 기반으로 상황에 대응하는 우르술라의 대사를 서로 이야기하듯 대답해줘.
@@ -182,14 +183,14 @@ public class GPT : MonoBehaviour
                 Debug.Log(response);
                 response = Utils.RemoveSpecialChar(response);
                 uiText.text = response;
-                //GameManager.Instance.GptFinish(true, isEnd);
+                GameManager.Instance.GptFinish(true);
             }
             else
             {
                 uiText.text = "생성에 실패했습니다.\n";
                 string reason = Utils.SubJsonString(request.downloadHandler.text, "\"finish_reason\"", ".\"index\"");
                 uiText.text += reason;
-                //GameManager.Instance.GptFinish(false);
+                GameManager.Instance.GptFinish(false);
             }
             Debug.Log(request.downloadHandler.text);
         }
@@ -198,7 +199,7 @@ public class GPT : MonoBehaviour
             uiText.text = "생성에 실패했습니다.\n";
             uiText.text += request.error;
             Debug.LogError(request.error);
-            //GameManager.Instance.GptFinish(false);
+            GameManager.Instance.GptFinish(false);
         }
 
         isProgress = false;
@@ -211,7 +212,7 @@ public class GPT : MonoBehaviour
         if (prompt == string.Empty)
         {
             Debug.LogWarning("[GPT] no input inside");
-            //GameManager.Instance.GptFinish(false);
+            GameManager.Instance.GptFinish(false);
             return;
         }
 
