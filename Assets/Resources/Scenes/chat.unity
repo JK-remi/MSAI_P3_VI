@@ -323,6 +323,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1052032830}
+  - component: {fileID: 1052032835}
   - component: {fileID: 1052032834}
   - component: {fileID: 1052032833}
   - component: {fileID: 1052032832}
@@ -390,6 +391,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38621446fd8432946883dd1fa45eb597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SYSTEM_MSG: "\uB108\uB294 \uC778\uC5B4\uACF5\uC8FC \uC5F0\uADF9\uC744 \uD558\uB294
+    \uBD07\uC774\uC57C. \r\n\uC778\uB371\uC2A4 \uB370\uC774\uD130\uB97C \uAE30\uBC18\uC73C\uB85C
+    \uC0C1\uD669\uC5D0 \uB300\uC751\uD558\uB294 \uC6B0\uB974\uC220\uB77C\uC758 \uB300\uC0AC\uB97C
+    \uC11C\uB85C \uC774\uC57C\uAE30\uD558\uB4EF \uB300\uB2F5\uD574\uC918.\r\n\uD55C
+    \uBB38\uC7A5\uC529 \uB9D0\uD574.\r\n\uB4F1\uC7A5\uC778\uBB3C: \uC6B0\uB974\uC220\uB77C\r\n\uC131\uACA9:
+    \uC545\uB784\uD568, \uC74C\uBAA8\uB97C \uAFB8\uBBF8\uACE0 \uC788\uC74C, \uAC70\uC9D3\uB9D0\uC7C1\uC774,
+    \uB9C8\uB140\r\n---\r\n\uCD9C\uCC98\uB294 \uD45C\uC2DC\uD558\uC9C0 \uB9C8\r\n\uC544\uB9AC\uC5D8\uC774
+    \uBAA9\uC18C\uB9AC\uB97C \uC783\uACE0 \uC778\uAC04\uC774 \uB418\uBA74 'im_end'
+    \uC774\uB77C\uACE0 \uB300\uB2F5\uD574\uC918.\r\n\uC544\uB9AC\uC5D8\uC774 \uC6B0\uB974\uC220\uB77C\uC5D0\uAC8C
+    \uBAA9\uC18C\uB9AC\uB97C \uC8FC\uACA0\uB2E4\uACE0 \uD558\uBA74 \uACC4\uC57D\uC774
+    \uC644\uB8CC\uB41C\uAC70\uACE0, \uC544\uB9AC\uC5D8\uC774 \uC778\uAC04\uC774 \uB41C\uAC70\uC57C.
+    \uADF8\uB7EC\uBA74 'im_end' \uC774\uB77C\uACE0 \uB300\uB2F5\uD574\uC918.\r\n---
+    \r"
   uiText: {fileID: 0}
   isRAG: 0
 --- !u!114 &1052032834
@@ -405,6 +419,102 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panelLiveChat: {fileID: 90862540}
+--- !u!82 &1052032835
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052032829}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1226709446
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +888,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1226709450}
     m_Modifications:
+    - target: {fileID: 80217785840800942, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: videoId
+      value: JEZJt0yi5BM
+      objectReference: {fileID: 0}
     - target: {fileID: 1126065015127424763, guid: b126f0401e47546449834780e4612071, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -869,6 +983,22 @@ PrefabInstance:
     - target: {fileID: 6862527639912306485, guid: b126f0401e47546449834780e4612071, type: 3}
       propertyPath: m_Name
       value: Panel_LiveChat
+      objectReference: {fileID: 0}
+    - target: {fileID: 7782369617634381696, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284567709553487693, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284567709553487693, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284567709553487693, guid: b126f0401e47546449834780e4612071, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
