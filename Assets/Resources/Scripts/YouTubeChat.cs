@@ -69,7 +69,7 @@ public class YouTubeChat : MonoBehaviour
 
         if (isError)
         {
-            Debug.LogError("라이브 채팅 ID를 가져오는 중 오류 발생: " + request.error);
+            VideoID_Failed("라이브 채팅 ID를 가져오는 중 오류 발생: " + request.error);
         }
         else
         {
@@ -85,12 +85,12 @@ public class YouTubeChat : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("라이브 채팅 ID를 찾을 수 없습니다.");
+                    VideoID_Failed("라이브 채팅 ID를 찾을 수 없습니다.");
                 }
             }
             else
             {
-                Debug.LogError("라이브 스트리밍 정보가 없습니다.");
+                VideoID_Failed("라이브 스트리밍 정보가 없습니다.");
             }
         }
     }
@@ -124,7 +124,7 @@ public class YouTubeChat : MonoBehaviour
 
             if (isError)
             {
-                Debug.LogError("라이브 채팅 메시지를 가져오는 중 오류 발생: " + request.error);
+                VideoID_Failed("라이브 채팅 메시지를 가져오는 중 오류 발생: " + request.error);
             }
             else
             {
@@ -149,7 +149,7 @@ public class YouTubeChat : MonoBehaviour
     {
         if (chatMessagePrefab == null)
         {
-            Debug.LogError("chatMessagePrefab이 설정되지 않았습니다.");
+            VideoID_Failed("chatMessagePrefab이 설정되지 않았습니다.");
             return;
         }
 
@@ -158,7 +158,7 @@ public class YouTubeChat : MonoBehaviour
         var textComponent = newMessage.GetComponent<TMP_Text>();
         if (textComponent == null)
         {
-            Debug.LogError("chatMessagePrefab에 TMP_Text 컴포넌트가 없습니다.");
+            VideoID_Failed("chatMessagePrefab에 TMP_Text 컴포넌트가 없습니다.");
             return;
         }
 
@@ -173,7 +173,7 @@ public class YouTubeChat : MonoBehaviour
         }
         else
         {
-            Debug.LogError("scrollRect가 설정되지 않았습니다.");
+            VideoID_Failed("scrollRect가 설정되지 않았습니다.");
         }
     }
 
@@ -191,6 +191,16 @@ public class YouTubeChat : MonoBehaviour
             corLiveChat = StartCoroutine(GetLiveChatId());
 
             if (panelVideoID != null) panelVideoID.SetActive(false);
+        }
+    }
+
+    private void VideoID_Failed(string errMsg)
+    {
+        Debug.LogError(errMsg);
+
+        if (panelVideoID != null)
+        {
+            panelVideoID.SetActive(true);
         }
     }
 }
