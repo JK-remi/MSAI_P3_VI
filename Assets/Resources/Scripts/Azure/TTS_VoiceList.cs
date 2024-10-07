@@ -1,13 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.Hardware;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class VoiceData
 {
@@ -22,8 +18,7 @@ public class VoiceData
 
 public class TTS_VoiceList : MonoBehaviour
 {
-    private const string ENDPOINT = "https://westus2.tts.speech.microsoft.com/cognitiveservices/voices/list";
-    private const string API_KEY = "ae7b95c9067549e5b0f28cb9f4a72544";   // 1f8394e0f667401bb5c783e09b7c6f30
+
     private const string SELECTED_ALL = "All";
 
     private TTS parentTTS;
@@ -49,8 +44,8 @@ public class TTS_VoiceList : MonoBehaviour
 
     private IEnumerator GetVoiceList()
     {
-        UnityWebRequest request = UnityWebRequest.Get(ENDPOINT);
-        request.SetRequestHeader("Ocp-Apim-Subscription-Key", API_KEY);
+        UnityWebRequest request = UnityWebRequest.Get(AzureUrls.VOICE_LIST_URL);
+        request.SetRequestHeader("Ocp-Apim-Subscription-Key", AzureUrls.SPEECH_KEY);
         yield return request.SendWebRequest();
         while (!request.isDone)
         {

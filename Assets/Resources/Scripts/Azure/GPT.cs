@@ -71,11 +71,7 @@ public class GPT_SimpleData
 
 public class GPT : MonoBehaviour
 {
-    private const string ENDPOINT = "https://eastus-project3-team2.openai.azure.com/";
-    private const string API_KEY = "3eef2399ffdb4aad8a1d577f41d0f348";
-    private const string DEPLOY_NAME = "project3-team2-gpt-4o";
-    private const string SEARCH_ENDPOINT = "https://project3team2.search.windows.net";
-    private const string SEARCH_KEY = "LOEoj43mzzihlze2MGY6UpuFjc6ViomJd6DD2f8x51AzSeBrEGd9";
+
     private const string END_WORD = "im_end";
     private string RAG_MODEL = "b09_c2";
     [SerializeField]
@@ -126,19 +122,19 @@ public class GPT : MonoBehaviour
             data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
             data.messages.Add(new GPT_Message("user", prompt));
 
-            data.azureSearchEndpoint = SEARCH_ENDPOINT;
-            data.azureSearchKey = SEARCH_KEY;
+            data.azureSearchEndpoint = AzureUrls.SEARCH_URL;
+            data.azureSearchKey = AzureUrls.SEARCH_KEY;
             data.azureSearchIndexName = RAG_MODEL;
 
             GPT_DataSrc dataSrc = new GPT_DataSrc();
             GPT_Params gptParams = new GPT_Params();
-            gptParams.endpoint = SEARCH_ENDPOINT;
+            gptParams.endpoint = AzureUrls.SEARCH_URL;
             gptParams.index_name = RAG_MODEL;
             gptParams.role_information = SYSTEM_MSG;
             GPT_Authentication auth = new GPT_Authentication();
-            auth.key = SEARCH_KEY;
+            auth.key = AzureUrls.SEARCH_KEY;
             gptParams.authentication = auth;
-            gptParams.key = SEARCH_KEY;
+            gptParams.key = AzureUrls.SEARCH_KEY;
             gptParams.indexName = RAG_MODEL;
             dataSrc.parameters = gptParams;
 
@@ -156,11 +152,11 @@ public class GPT : MonoBehaviour
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(strBody);
 
-        string url = string.Format("{0}/openai/deployments/{1}/chat/completions?api-version=2024-02-15-preview", ENDPOINT, DEPLOY_NAME);
+        string url = AzureUrls.GPT_URL;
         UnityWebRequest request = new UnityWebRequest(url);
         request.method = UnityWebRequest.kHttpVerbPOST;
         request.SetRequestHeader("Content-Type", "application/json");
-        request.SetRequestHeader("api-key", API_KEY);
+        request.SetRequestHeader("api-key", AzureUrls.GPT_KEY);
         request.uploadHandler = new UploadHandlerRaw(bytes);
         request.downloadHandler = new DownloadHandlerBuffer();
         request.timeout = TIMEOUT;

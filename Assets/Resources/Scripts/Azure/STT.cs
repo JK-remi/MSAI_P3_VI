@@ -8,7 +8,6 @@ using UnityEngine;
 
 public class STT : MonoBehaviour
 {
-    private const string SPEECH_KEY = "1ff2d7a7379b4e349aa1734718de89fc";   // 57d50f60f0aa4712a266501ca97e9ebb
 
     private const int HEADER_SIZE = 44;
     private const string FILE_NAME = "STT_attack.wav";
@@ -64,8 +63,8 @@ public class STT : MonoBehaviour
 
     private void Awake()
     {
-        speechConfig = SpeechConfig.FromSubscription(SPEECH_KEY, Utils.SPEECH_REGION);
-        speechConfig.SpeechRecognitionLanguage = Utils.LANGUAGE;
+        speechConfig = SpeechConfig.FromSubscription(AzureUrls.SPEECH_KEY, AzureUrls.SPEECH_REGION);
+        speechConfig.SpeechRecognitionLanguage = AzureUrls.LANGUAGE;
 
         data = new PronunciationData();
 
@@ -293,7 +292,7 @@ public class STT : MonoBehaviour
 
         string filePath = Utils.GetFilePath(FILE_NAME);
         AudioConfig audioConfig = AudioConfig.FromWavFileInput(filePath);
-        SpeechRecognizer speechRecognizer = new SpeechRecognizer(speechConfig, Utils.LANGUAGE, audioConfig);
+        SpeechRecognizer speechRecognizer = new SpeechRecognizer(speechConfig, AzureUrls.LANGUAGE, audioConfig);
         var speechResult = await speechRecognizer.RecognizeOnceAsync();
         OutputSpeechRecognitionResult(speechResult);
 
@@ -323,7 +322,7 @@ public class STT : MonoBehaviour
 
         string filePath = Utils.GetFilePath(FILE_NAME);
         AudioConfig audioConfig = AudioConfig.FromWavFileInput(filePath);
-        SpeechRecognizer speechRecognizer = new SpeechRecognizer(speechConfig, Utils.LANGUAGE, audioConfig);
+        SpeechRecognizer speechRecognizer = new SpeechRecognizer(speechConfig, AzureUrls.LANGUAGE, audioConfig);
         PronunciationAssessmentConfig pronunciationConfig = new PronunciationAssessmentConfig(
             referenceText: spellText,
             gradingSystem: GradingSystem.HundredMark,

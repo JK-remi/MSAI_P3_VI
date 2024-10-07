@@ -7,8 +7,6 @@ public class Utils
 {
     public const float AUDIO_REACTOR_FACTOR = 32767f; //to convert float to Int16
 
-    public const string SPEECH_REGION = "eastus";
-    public const string LANGUAGE = "ko-KR";
 
     public static string GetFilePath(string filename)
     {

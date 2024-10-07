@@ -7,9 +7,6 @@ using UnityEngine.Networking;
 public class TTS : MonoBehaviour
 {
     private const string FILE_NAME = "TTS";
-    private const string TOKEN_URL = "https://westus2.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-    private const string TTS_URL = "https://westus2.tts.speech.microsoft.com/cognitiveservices/v1";
-    private const string API_KEY = "1ff2d7a7379b4e349aa1734718de89fc";   // 57d50f60f0aa4712a266501ca97e9ebb
     private const int AUDIO_FREQUENCEY = 24000;     // "X-Microsoft-OutputFormat", "riff-24khz-16bit-mono-pcm"
 
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice
@@ -39,8 +36,8 @@ public class TTS : MonoBehaviour
         Debug.Log("Get Token");
         token = "";
 
-        UnityWebRequest request = UnityWebRequest.Post(TOKEN_URL, new WWWForm());
-        request.SetRequestHeader("Ocp-Apim-Subscription-Key", API_KEY);
+        UnityWebRequest request = UnityWebRequest.Post(AzureUrls.TTS_TOKEN_URL, new WWWForm());
+        request.SetRequestHeader("Ocp-Apim-Subscription-Key", AzureUrls.SPEECH_KEY);
         yield return request.SendWebRequest();
         while (!request.isDone)
         {
@@ -63,7 +60,7 @@ public class TTS : MonoBehaviour
         Debug.Log("TTS start");
 
         string ssml =
-            "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"" + Utils.LANGUAGE + "\">" +
+            "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"" + AzureUrls.LANGUAGE + "\">" +
                 "<voice name=\"" + VOICE_NAME + "\">" +
                     "<mstts:express-as role=\"" + VOICE_ROLE + "\" style=\"" + VOICE_STYLE + "\" styledegree=\"" + VOICE_STYLE_DEG + "\">" +
                         "<prosody pitch=\"" + PROSODY_PITCH + "\" rate=\"" + PROSODY_RATE + "\" volume=\"" + PROSODY_VOL + "\">" +
@@ -74,7 +71,7 @@ public class TTS : MonoBehaviour
             "</speak>";
         byte[] data = System.Text.Encoding.UTF8.GetBytes(ssml);
 
-        UnityWebRequest request = new UnityWebRequest(TTS_URL);
+        UnityWebRequest request = new UnityWebRequest(AzureUrls.TTS_URL);
         request.method = UnityWebRequest.kHttpVerbPOST;
         request.uploadHandler = new UploadHandlerRaw(data);
         request.downloadHandler = new DownloadHandlerBuffer();
