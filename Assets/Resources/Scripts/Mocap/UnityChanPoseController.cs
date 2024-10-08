@@ -6,6 +6,37 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Threading;
 
+// Mediapipe 랜드마크 인덱스
+public enum eLandmark
+{
+    NONE = -1,
+    NOSE = 0,
+    LEFT_EYE_INNER = 1,
+    LEFT_EYE = 2,
+    LEFT_EYE_OUTER = 3,
+    RIGHT_EYE_INNER = 4,
+    RIGHT_EYE = 5,
+    RIGHT_EYE_OUTER = 6,
+    LEFT_EAR = 7,
+    RIGHT_EAR = 8,
+    MOUTH_LEFT = 9,
+    MOUTH_RIGHT = 10,
+    LEFT_SHOULDER = 11,
+    RIGHT_SHOULDER = 12,
+    LEFT_ELBOW = 13,
+    RIGHT_ELBOW = 14,
+    LEFT_WRIST = 15,
+    RIGHT_WRIST = 16,
+    LEFT_HIP = 23,
+    RIGHT_HIP = 24,
+    LEFT_KNEE = 25,
+    RIGHT_KNEE = 26,
+    LEFT_ANKLE = 27,
+    RIGHT_ANKLE = 28,
+    LEFT_FOOT_INDEX = 32,
+    RIGHT_FOOT_INDEX = 31,
+}
+
 public class UnityChanPoseController : MonoBehaviour
 {
     // 본 정의
@@ -32,35 +63,10 @@ public class UnityChanPoseController : MonoBehaviour
     public Transform rightLowerLeg;
     public Transform rightFoot;
 
-    // Mediapipe 랜드마크 인덱스
-    private const int NOSE = 0;
-    private const int LEFT_EYE_INNER = 1;
-    private const int LEFT_EYE = 2;
-    private const int LEFT_EYE_OUTER = 3;
-    private const int RIGHT_EYE_INNER = 4;
-    private const int RIGHT_EYE = 5;
-    private const int RIGHT_EYE_OUTER = 6;
-    private const int LEFT_EAR = 7;
-    private const int RIGHT_EAR = 8;
-    private const int MOUTH_LEFT = 9;
-    private const int MOUTH_RIGHT = 10;
-    private const int LEFT_SHOULDER = 11;
-    private const int RIGHT_SHOULDER = 12;
-    private const int LEFT_ELBOW = 13;
-    private const int RIGHT_ELBOW = 14;
-    private const int LEFT_WRIST = 15;
-    private const int RIGHT_WRIST = 16;
-    private const int LEFT_HIP = 23;
-    private const int RIGHT_HIP = 24;
-    private const int LEFT_KNEE = 25;
-    private const int RIGHT_KNEE = 26;
-    private const int LEFT_ANKLE = 27;
-    private const int RIGHT_ANKLE = 28;
-
     private UdpClient client;
     private const int port = 5052;
 
-    private Dictionary<int, Vector3> landmarks = new Dictionary<int, Vector3>();
+    private Dictionary<eLandmark, Vector3> landmarks = new Dictionary<eLandmark, Vector3>();
 
     void Start()
     {
@@ -86,7 +92,7 @@ public class UnityChanPoseController : MonoBehaviour
                 float y = -kvp.Value[1];
                 float z = kvp.Value[2];
                 Vector3 position = new Vector3(x, y, z);
-                landmarks[kvp.Key] = position;
+                landmarks[(eLandmark)kvp.Key] = position;
             }
         }
 
@@ -95,10 +101,10 @@ public class UnityChanPoseController : MonoBehaviour
 
     void Update()
     {
-        Dictionary<int, Vector3> currentLandmarks;
+        Dictionary<eLandmark, Vector3> currentLandmarks;
         lock (landmarks)
         {
-            currentLandmarks = new Dictionary<int, Vector3>(landmarks);
+            currentLandmarks = new Dictionary<eLandmark, Vector3>(landmarks);
         }
 
         if (currentLandmarks.Count == 0)
@@ -108,7 +114,7 @@ public class UnityChanPoseController : MonoBehaviour
         UpdatePose(currentLandmarks);
     }
 
-    void UpdatePose(Dictionary<int, Vector3> lm)
+    void UpdatePose(Dictionary<eLandmark, Vector3> lm)
     {
         // 힙 위치 업데이트
         //if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(RIGHT_HIP))
@@ -123,67 +129,67 @@ public class UnityChanPoseController : MonoBehaviour
         // 각 사지에 대해 방향 벡터를 계산하고 해당 본의 회전을 설정합니다.
 
         // 왼쪽 허벅지
-        if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(LEFT_KNEE))
+        if (lm.ContainsKey(eLandmark.LEFT_HIP) && lm.ContainsKey(eLandmark.LEFT_KNEE))
         {
-            SetBoneRotation(leftUpperLeg, lm[LEFT_HIP], lm[LEFT_KNEE]);
+            SetBoneRotation(leftUpperLeg, lm[eLandmark.LEFT_HIP], lm[eLandmark.LEFT_KNEE]);
         }
 
         // 왼쪽 종아리
-        if (lm.ContainsKey(LEFT_KNEE) && lm.ContainsKey(LEFT_ANKLE))
+        if (lm.ContainsKey(eLandmark.LEFT_KNEE) && lm.ContainsKey(eLandmark.LEFT_ANKLE))
         {
-            SetBoneRotation(leftLowerLeg, lm[LEFT_KNEE], lm[LEFT_ANKLE]);
+            SetBoneRotation(leftLowerLeg, lm[eLandmark.LEFT_KNEE], lm[eLandmark.LEFT_ANKLE]);
         }
 
         // 오른쪽 허벅지
-        if (lm.ContainsKey(RIGHT_HIP) && lm.ContainsKey(RIGHT_KNEE))
+        if (lm.ContainsKey(eLandmark.RIGHT_HIP) && lm.ContainsKey(eLandmark.RIGHT_KNEE))
         {
-            SetBoneRotation(rightUpperLeg, lm[RIGHT_HIP], lm[RIGHT_KNEE]);
+            SetBoneRotation(rightUpperLeg, lm[eLandmark.RIGHT_HIP], lm[eLandmark.RIGHT_KNEE]);
         }
 
         // 오른쪽 종아리
-        if (lm.ContainsKey(RIGHT_KNEE) && lm.ContainsKey(RIGHT_ANKLE))
+        if (lm.ContainsKey(eLandmark.RIGHT_KNEE) && lm.ContainsKey(eLandmark.RIGHT_ANKLE))
         {
-            SetBoneRotation(rightLowerLeg, lm[RIGHT_KNEE], lm[RIGHT_ANKLE]);
+            SetBoneRotation(rightLowerLeg, lm[eLandmark.RIGHT_KNEE], lm[eLandmark.RIGHT_ANKLE]);
         }
 
         // 왼쪽 상완
-        if (lm.ContainsKey(LEFT_SHOULDER) && lm.ContainsKey(LEFT_ELBOW))
+        if (lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.LEFT_ELBOW))
         {
-            SetBoneRotation(leftUpperArm, lm[LEFT_SHOULDER], lm[LEFT_ELBOW]);
+            SetBoneRotation(leftUpperArm, lm[eLandmark.LEFT_SHOULDER], lm[eLandmark.LEFT_ELBOW]);
         }
 
         // 왼쪽 하완
-        if (lm.ContainsKey(LEFT_ELBOW) && lm.ContainsKey(LEFT_WRIST))
+        if (lm.ContainsKey(eLandmark.LEFT_ELBOW) && lm.ContainsKey(eLandmark.LEFT_WRIST))
         {
-            SetBoneRotation(leftLowerArm, lm[LEFT_ELBOW], lm[LEFT_WRIST]);
+            SetBoneRotation(leftLowerArm, lm[eLandmark.LEFT_ELBOW], lm[eLandmark.LEFT_WRIST]);
         }
 
         // 오른쪽 상완
-        if (lm.ContainsKey(RIGHT_SHOULDER) && lm.ContainsKey(RIGHT_ELBOW))
+        if (lm.ContainsKey(eLandmark.RIGHT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_ELBOW))
         {
-            SetBoneRotation(rightUpperArm, lm[RIGHT_SHOULDER], lm[RIGHT_ELBOW]);
+            SetBoneRotation(rightUpperArm, lm[eLandmark.RIGHT_SHOULDER], lm[eLandmark.RIGHT_ELBOW]);
         }
 
         // 오른쪽 하완
-        if (lm.ContainsKey(RIGHT_ELBOW) && lm.ContainsKey(RIGHT_WRIST))
+        if (lm.ContainsKey(eLandmark.RIGHT_ELBOW) && lm.ContainsKey(eLandmark.RIGHT_WRIST))
         {
-            SetBoneRotation(rightLowerArm, lm[RIGHT_ELBOW], lm[RIGHT_WRIST]);
+            SetBoneRotation(rightLowerArm, lm[eLandmark.RIGHT_ELBOW], lm[eLandmark.RIGHT_WRIST]);
         }
 
         // 척추
-        if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(RIGHT_HIP) && lm.ContainsKey(LEFT_SHOULDER) && lm.ContainsKey(RIGHT_SHOULDER))
+        if (lm.ContainsKey(eLandmark.LEFT_HIP) && lm.ContainsKey(eLandmark.RIGHT_HIP) && lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_SHOULDER))
         {
-            Vector3 hipCenter = (lm[LEFT_HIP] + lm[RIGHT_HIP]) / 2f;
-            Vector3 shoulderCenter = (lm[LEFT_SHOULDER] + lm[RIGHT_SHOULDER]) / 2f;
+            Vector3 hipCenter = (lm[eLandmark.LEFT_HIP] + lm[eLandmark.RIGHT_HIP]) / 2f;
+            Vector3 shoulderCenter = (lm[eLandmark.LEFT_SHOULDER] + lm[eLandmark.RIGHT_SHOULDER]) / 2f;
             SetBoneRotation(spine, hipCenter, shoulderCenter);
         }
 
         // 목과 머리
-        if (lm.ContainsKey(LEFT_SHOULDER) && lm.ContainsKey(RIGHT_SHOULDER) && lm.ContainsKey(NOSE))
+        if (lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_SHOULDER) && lm.ContainsKey(eLandmark.NOSE))
         {
-            Vector3 shoulderCenter = (lm[LEFT_SHOULDER] + lm[RIGHT_SHOULDER]) / 2f;
-            SetBoneRotation(neck, shoulderCenter, lm[NOSE]);
-            SetBoneRotation(head, shoulderCenter, lm[NOSE]);
+            Vector3 shoulderCenter = (lm[eLandmark.LEFT_SHOULDER] + lm[eLandmark.RIGHT_SHOULDER]) / 2f;
+            SetBoneRotation(neck, shoulderCenter, lm[eLandmark.NOSE]);
+            SetBoneRotation(head, shoulderCenter, lm[eLandmark.NOSE]);
         }
     }
 
