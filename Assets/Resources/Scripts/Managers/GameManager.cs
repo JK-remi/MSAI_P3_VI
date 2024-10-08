@@ -56,6 +56,11 @@ public class GameManager : MonoBehaviour
         gpt.OnGPT(prompt);
     }
 
+    public void Send2TTS(GameObject playBtn)
+    {
+        tts.OnPlay(playBtn);
+    }
+
     public void PlayAudio(AudioClip clip)
     {
         if (clip == null) return;
@@ -86,5 +91,10 @@ public class GameManager : MonoBehaviour
     public void ResponseEnd()
     {
         isResponseEnd = true;
+    }
+
+    public void SetVoice(string name, float pitch, float rate, float vol)
+    {
+        tts.SetVoice(name, pitch, rate, vol);
     }
 }

@@ -149,13 +149,18 @@ public class TTS : MonoBehaviour
         line = input.text;
     }
 
-    public void SetVoice(string name, string role, string style, float fitch, float rate, float vol)
+    public void SetVoice(string name, float pitch, float rate, float vol)
+    {
+        SetVoice(name, "", "", pitch, rate, vol);
+    }
+
+    public void SetVoice(string name, string role, string style, float pitch, float rate, float vol)
     {
         VOICE_NAME = name;
         VOICE_ROLE = role;
         VOICE_STYLE = style;
         //VOICE_STYLE_DEG = "2";  // 0.01 ~ 2
-        PROSODY_PITCH = string.Format("{0:00}%", fitch * 100);
+        PROSODY_PITCH = string.Format("{0:00}%", pitch * 100);
         PROSODY_RATE = string.Format("{0:00}%", rate * 100);
         PROSODY_VOL = string.Format("{0:00}%", vol * 100);
     }

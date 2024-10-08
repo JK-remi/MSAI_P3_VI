@@ -18,10 +18,8 @@ public class VoiceData
 
 public class TTS_VoiceList : MonoBehaviour
 {
-
     private const string SELECTED_ALL = "All";
 
-    private TTS parentTTS;
     private VoiceData curVoice;
 
     private List<VoiceData> voiceList = new List<VoiceData>();
@@ -38,7 +36,6 @@ public class TTS_VoiceList : MonoBehaviour
 
     void Start()
     {
-        parentTTS = this.GetComponent<TTS>();
         StartCoroutine(GetVoiceList());
     }
 
@@ -134,9 +131,11 @@ public class TTS_VoiceList : MonoBehaviour
         }
     }
 
-    public void OnPlay()
+    public void OnPlay(GameObject btnPlay)
     {
-        parentTTS.SetVoice(curVoice.ShortName, dropdown_Role.captionText.text, dropdown_Style.captionText.text, 
-            slider_pitch.value, slider_rate.value, slider_volume.value);
+        GameManager.Instance.SetVoice(curVoice.ShortName, slider_pitch.value, slider_rate.value, slider_volume.value);
+        GameManager.Instance.Send2TTS(btnPlay);
+        //parentTTS.SetVoice(curVoice.ShortName, dropdown_Role.captionText.text, dropdown_Style.captionText.text, 
+        //    slider_pitch.value, slider_rate.value, slider_volume.value);
     }
 }
