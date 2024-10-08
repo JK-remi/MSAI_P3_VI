@@ -111,13 +111,13 @@ public class UnityChanPoseController : MonoBehaviour
     void UpdatePose(Dictionary<int, Vector3> lm)
     {
         // 힙 위치 업데이트
-        if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(RIGHT_HIP))
-        {
-            Vector3 leftHipPos = lm[LEFT_HIP];
-            Vector3 rightHipPos = lm[RIGHT_HIP];
-            Vector3 hipCenter = (leftHipPos + rightHipPos) / 2f;
-            hips.position = hipCenter;
-        }
+        //if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(RIGHT_HIP))
+        //{
+        //    Vector3 leftHipPos = lm[LEFT_HIP];
+        //    Vector3 rightHipPos = lm[RIGHT_HIP];
+        //    Vector3 hipCenter = (leftHipPos + rightHipPos) / 2f;
+        //    hips.position = hipCenter;
+        //}
 
         // 본 회전 업데이트
         // 각 사지에 대해 방향 벡터를 계산하고 해당 본의 회전을 설정합니다.
