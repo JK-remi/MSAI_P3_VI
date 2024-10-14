@@ -39,16 +39,17 @@ while cap.isOpened():
         continue
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # image = cv2.flip(image, 1)
     results = holistic.process(image_rgb)
 
     height, width, _ = image.shape
     black_image = np.zeros((height, width, 3), dtype=np.uint8)
 
     data = {}
-
     # 포즈 랜드마크 수집 및 그리기
     if results.pose_landmarks:
         pose_landmarks = [[lmk.x, lmk.y, lmk.z] for lmk in results.pose_landmarks.landmark]
+        # pose_landmarks = [[lmk.x, lmk.y, lmk.z] for lmk in results.pose_world_landmarks.landmark]
         data['pose'] = pose_landmarks
         mp_drawing.draw_landmarks(
             black_image,
