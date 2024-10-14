@@ -8,7 +8,7 @@ public class PersistentCalibrationData : ScriptableObject
     public CalibrationData spineUpDown, hipsTwist, chest, head;
 
 #if UNITY_EDITOR
-    public static PersistentCalibrationData CreateData(string fileName, string folder = "Assets/")
+    public static PersistentCalibrationData CreateData(string fileName, string folder = "Assets/Resources/CalibrationData/")
     {
         PersistentCalibrationData p = ScriptableObject.CreateInstance<PersistentCalibrationData>();
         string path = folder + fileName + ".asset";
