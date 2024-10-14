@@ -39,39 +39,53 @@ public enum eLandmark
 
 public class UnityChanPoseController : MonoBehaviour
 {
-    // 본 정의
-    public Transform hips;
-    public Transform spine;
-    public Transform neck;
-    public Transform head;
+    private Animator animator;
 
-    public Transform leftShoulder;
-    public Transform leftUpperArm;
-    public Transform leftLowerArm;
-    public Transform leftHand;
+    public PersistentCalibrationData calibrationData;
+    private Dictionary<HumanBodyBones, CalibrationData> parentCalibrationData = new Dictionary<HumanBodyBones, CalibrationData>();
+    private CalibrationData spineUpDown, hipsTwist, chest, head;
 
-    public Transform rightShoulder;
-    public Transform rightUpperArm;
-    public Transform rightLowerArm;
-    public Transform rightHand;
+    private Dictionary<eLandmark, Vector3> landmarks = new Dictionary<eLandmark, Vector3>();
 
-    public Transform leftUpperLeg;
-    public Transform leftLowerLeg;
-    public Transform leftFoot;
-
-    public Transform rightUpperLeg;
-    public Transform rightLowerLeg;
-    public Transform rightFoot;
+    private Quaternion initialRotation;
+    private Vector3 initialPosition;
+    private Quaternion targetRot;
 
     private UdpClient client;
     private const int port = 5052;
 
-    private Dictionary<eLandmark, Vector3> landmarks = new Dictionary<eLandmark, Vector3>();
-
     void Start()
     {
+        initialRotation = transform.rotation;
+        initialPosition = transform.position;
+
+        if (calibrationData)
+        {
+            animator = this.GetComponent<Animator>();   
+            CalibrateFromPersistent();
+        }
+
         client = new UdpClient(port);
         client.BeginReceive(new System.AsyncCallback(ReceiveData), null);
+    }
+
+    public void CalibrateFromPersistent()
+    {
+        parentCalibrationData.Clear();
+
+        if (calibrationData)
+        {
+            foreach (PersistentCalibrationData.CalibrationEntry d in calibrationData.parentCalibrationData)
+            {
+                parentCalibrationData.Add(d.bone, d.data.ReconstructReferences());
+            }
+            spineUpDown = calibrationData.spineUpDown.ReconstructReferences();
+            hipsTwist = calibrationData.hipsTwist.ReconstructReferences();
+            chest = calibrationData.chest.ReconstructReferences();
+            head = calibrationData.head.ReconstructReferences();
+        }
+
+        animator.enabled = false; // disable animator to stop interference.
     }
 
     void ReceiveData(System.IAsyncResult result)
@@ -80,19 +94,32 @@ public class UnityChanPoseController : MonoBehaviour
         byte[] data = client.EndReceive(result, ref anyIP);
         string json = Encoding.UTF8.GetString(data);
 
-        Dictionary<int, float[]> receivedLandmarks = JsonConvert.DeserializeObject<Dictionary<int, float[]>>(json);
+        Dictionary<string, List<float[]>> receivedDatas = JsonConvert.DeserializeObject<Dictionary<string, List<float[]>>>(json);
+        List<float[]> receivedLandmarks = null;
+        if (receivedDatas.ContainsKey("pose"))
+        {
+            receivedLandmarks = receivedDatas["pose"];
+        }
 
         lock (landmarks)
         {
-            landmarks.Clear();
-            foreach (var kvp in receivedLandmarks)
+            for (int i=0; i< receivedLandmarks.Count; i++)
             {
+                float[] kvp = receivedLandmarks[i];
+
                 // 좌표 변환 (Y축 반전)
-                float x = kvp.Value[0];
-                float y = -kvp.Value[1];
-                float z = kvp.Value[2];
+                float x = kvp[0];
+                float y = -kvp[1];
+                float z = kvp[2];
                 Vector3 position = new Vector3(x, y, z);
-                landmarks[(eLandmark)kvp.Key] = position;
+                if(landmarks.ContainsKey((eLandmark)i) == false)
+                {
+                    landmarks.Add((eLandmark)i,position);
+                }
+                else
+                {
+                    landmarks[(eLandmark)i] = position;
+                }
             }
         }
 
@@ -101,111 +128,63 @@ public class UnityChanPoseController : MonoBehaviour
 
     void Update()
     {
-        Dictionary<eLandmark, Vector3> currentLandmarks;
         lock (landmarks)
         {
-            currentLandmarks = new Dictionary<eLandmark, Vector3>(landmarks);
+            if (landmarks.Count == 0)
+                return;
+
+            // 포즈 업데이트
+            UpdatePose();
         }
-
-        if (currentLandmarks.Count == 0)
-            return;
-
-        // 포즈 업데이트
-        UpdatePose(currentLandmarks);
     }
 
-    void UpdatePose(Dictionary<eLandmark, Vector3> lm)
+    void UpdatePose()
     {
-        // 힙 위치 업데이트
-        //if (lm.ContainsKey(LEFT_HIP) && lm.ContainsKey(RIGHT_HIP))
-        //{
-        //    Vector3 leftHipPos = lm[LEFT_HIP];
-        //    Vector3 rightHipPos = lm[RIGHT_HIP];
-        //    Vector3 hipCenter = (leftHipPos + rightHipPos) / 2f;
-        //    hips.position = hipCenter;
-        //}
-
         // 본 회전 업데이트
         // 각 사지에 대해 방향 벡터를 계산하고 해당 본의 회전을 설정합니다.
-
-        // 왼쪽 허벅지
-        if (lm.ContainsKey(eLandmark.LEFT_HIP) && lm.ContainsKey(eLandmark.LEFT_KNEE))
+        // Compute the new rotations for each limbs of the avatar using the calibration datas we created before.
+        foreach(var i in parentCalibrationData)
         {
-            SetBoneRotation(leftUpperLeg, lm[eLandmark.LEFT_HIP], lm[eLandmark.LEFT_KNEE]);
+            Vector3 curDir = GetCurDirection(i.Value.lmChild, i.Value.lmParent);
+            Quaternion deltaRotTracked = Quaternion.FromToRotation(i.Value.initialDir, curDir);
+            i.Value.parent.rotation = deltaRotTracked * i.Value.initialRotation;
         }
 
-        // 왼쪽 종아리
-        if (lm.ContainsKey(eLandmark.LEFT_KNEE) && lm.ContainsKey(eLandmark.LEFT_ANKLE))
+        // Deal with spine chain as a special case.
+        if (parentCalibrationData.Count > 0)
         {
-            SetBoneRotation(leftLowerLeg, lm[eLandmark.LEFT_KNEE], lm[eLandmark.LEFT_ANKLE]);
-        }
+            Vector3 hipCenter = (landmarks[eLandmark.LEFT_HIP] + landmarks[eLandmark.RIGHT_HIP]) / 2f;
+            Vector3 shoulderCenter = (landmarks[eLandmark.LEFT_SHOULDER] + landmarks[eLandmark.RIGHT_SHOULDER]) / 2f;
+            Vector3 hipTwistDir = GetCurDirection(hipsTwist.lmChild, hipsTwist.lmParent);
 
-        // 오른쪽 허벅지
-        if (lm.ContainsKey(eLandmark.RIGHT_HIP) && lm.ContainsKey(eLandmark.RIGHT_KNEE))
-        {
-            SetBoneRotation(rightUpperLeg, lm[eLandmark.RIGHT_HIP], lm[eLandmark.RIGHT_KNEE]);
-        }
+            Vector3 hd = GetCurDirection(landmarks[head.lmChild], shoulderCenter);
+            // Some are partial rotations which we can stack together to specify how much we should rotate.
+            Quaternion headr = Quaternion.FromToRotation(head.initialDir, hd);
+            Quaternion twist = Quaternion.FromToRotation(hipsTwist.initialDir,
+                Vector3.Slerp(hipsTwist.initialDir, hipTwistDir, .25f));
+            Quaternion updown = Quaternion.FromToRotation(spineUpDown.initialDir,
+                Vector3.Slerp(spineUpDown.initialDir, GetCurDirection(shoulderCenter, hipCenter), .25f));
 
-        // 오른쪽 종아리
-        if (lm.ContainsKey(eLandmark.RIGHT_KNEE) && lm.ContainsKey(eLandmark.RIGHT_ANKLE))
-        {
-            SetBoneRotation(rightLowerLeg, lm[eLandmark.RIGHT_KNEE], lm[eLandmark.RIGHT_ANKLE]);
-        }
-
-        // 왼쪽 상완
-        if (lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.LEFT_ELBOW))
-        {
-            SetBoneRotation(leftUpperArm, lm[eLandmark.LEFT_SHOULDER], lm[eLandmark.LEFT_ELBOW]);
-        }
-
-        // 왼쪽 하완
-        if (lm.ContainsKey(eLandmark.LEFT_ELBOW) && lm.ContainsKey(eLandmark.LEFT_WRIST))
-        {
-            SetBoneRotation(leftLowerArm, lm[eLandmark.LEFT_ELBOW], lm[eLandmark.LEFT_WRIST]);
-        }
-
-        // 오른쪽 상완
-        if (lm.ContainsKey(eLandmark.RIGHT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_ELBOW))
-        {
-            SetBoneRotation(rightUpperArm, lm[eLandmark.RIGHT_SHOULDER], lm[eLandmark.RIGHT_ELBOW]);
-        }
-
-        // 오른쪽 하완
-        if (lm.ContainsKey(eLandmark.RIGHT_ELBOW) && lm.ContainsKey(eLandmark.RIGHT_WRIST))
-        {
-            SetBoneRotation(rightLowerArm, lm[eLandmark.RIGHT_ELBOW], lm[eLandmark.RIGHT_WRIST]);
-        }
-
-        // 척추
-        if (lm.ContainsKey(eLandmark.LEFT_HIP) && lm.ContainsKey(eLandmark.RIGHT_HIP) && lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_SHOULDER))
-        {
-            Vector3 hipCenter = (lm[eLandmark.LEFT_HIP] + lm[eLandmark.RIGHT_HIP]) / 2f;
-            Vector3 shoulderCenter = (lm[eLandmark.LEFT_SHOULDER] + lm[eLandmark.RIGHT_SHOULDER]) / 2f;
-            SetBoneRotation(spine, hipCenter, shoulderCenter);
-        }
-
-        // 목과 머리
-        if (lm.ContainsKey(eLandmark.LEFT_SHOULDER) && lm.ContainsKey(eLandmark.RIGHT_SHOULDER) && lm.ContainsKey(eLandmark.NOSE))
-        {
-            Vector3 shoulderCenter = (lm[eLandmark.LEFT_SHOULDER] + lm[eLandmark.RIGHT_SHOULDER]) / 2f;
-            SetBoneRotation(neck, shoulderCenter, lm[eLandmark.NOSE]);
-            SetBoneRotation(head, shoulderCenter, lm[eLandmark.NOSE]);
+            // Compute the final rotations.
+            Quaternion h = updown * updown * updown * twist * twist;
+            Quaternion s = h * twist * updown;
+            Quaternion c = s * twist * twist;
+            float speed = 10f;
+            hipsTwist.Tick(h * hipsTwist.initialRotation, speed);
+            spineUpDown.Tick(s * spineUpDown.initialRotation, speed);
+            chest.Tick(c * chest.initialRotation, speed);
+            head.Tick(updown * twist * headr * head.initialRotation, speed);
         }
     }
 
-    void SetBoneRotation(Transform bone, Vector3 start, Vector3 end)
+    Vector3 GetCurDirection(Vector3 vChild, Vector3 vParent)
     {
-        Vector3 direction = end - start;
-        if (direction == Vector3.zero)
-            return;
+        return (vChild - vParent).normalized;
+    }
 
-        // 본의 로컬 축에 맞게 회전 오프셋 적용 (필요 시 조정)
-        Quaternion rotationOffset = Quaternion.Euler(180, 90, 0);
-
-        Quaternion targetRotation = Quaternion.LookRotation(direction) * rotationOffset;
-
-        // 부드러운 회전을 위해 Slerp 사용
-        bone.rotation = Quaternion.Slerp(bone.rotation, targetRotation, Time.deltaTime * 10f);
+    Vector3 GetCurDirection(eLandmark lmChild, eLandmark lmParent)
+    {
+        return GetCurDirection(landmarks[lmChild], landmarks[lmParent]);
     }
 
     void OnApplicationQuit()

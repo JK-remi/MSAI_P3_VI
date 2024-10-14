@@ -9,10 +9,9 @@ using UnityEngine;
 public class CalibrationData
 {
     public string parentn, childn;
-    public eLandmark tparentn, tchildn; // for doing a lookup at runtime
+    public eLandmark lmParent, lmChild; // for doing a lookup at runtime
     [System.NonSerialized]
     public Transform parent, child;
-    public Vector3 vchild, vparent;
     [SerializeField]
     public Vector3 initialDir;
     [SerializeField]
@@ -23,19 +22,19 @@ public class CalibrationData
     public void Tick(Quaternion newTarget, float speed)
     {
         parent.rotation = newTarget;
-        parent.rotation = Quaternion.Lerp(parent.rotation, targetRotation, Time.deltaTime * speed);
+        parent.rotation = Quaternion.Lerp(parent.localRotation, targetRotation, Time.deltaTime * speed);
     }
 
-    public Vector3 CurrentDirection => (vchild - vparent).normalized;
-
-    public CalibrationData(Transform fparent, Transform fchild, eLandmark tparent, eLandmark tchild)
+    public CalibrationData(Transform tParent, Transform tChild, eLandmark lmParent, eLandmark lmChild)
     {
-        initialRotation = fparent.rotation;
+        initialRotation = tParent.rotation;
+        
+        this.parent = tParent;
+        this.child = tChild;
+        this.lmParent = lmParent;
+        this.lmChild = lmChild;
 
-        this.parent = fparent;
-        this.child = fchild;
-        this.tparentn = tparent;
-        this.tchildn = tchild;
+        initialDir = (tChild.position - tParent.position).normalized;
 
         parentn = GetPath(parent);
         childn = GetPath(child);
