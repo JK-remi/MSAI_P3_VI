@@ -274,8 +274,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uB098:"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -299,7 +299,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.05
+  m_fontSize: 24
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1140,8 +1140,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1274,8 +1274,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "{\uCE90\uB9AD\uD130\uBA85}:"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1299,7 +1299,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.05
+  m_fontSize: 24
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1408,8 +1408,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
