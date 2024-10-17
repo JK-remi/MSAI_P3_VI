@@ -15,7 +15,10 @@ public enum ePanel
 
 public class PanelBase : MonoBehaviour
 {
+    public ePanel uiType { get; protected set; }
+
     protected virtual void Init() { }
+    public virtual void ResetUI() { }
     public virtual void Open() 
     {
         this.gameObject.SetActive(true);
