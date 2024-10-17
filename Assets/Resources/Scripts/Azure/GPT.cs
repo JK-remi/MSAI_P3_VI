@@ -74,7 +74,6 @@ public class GPT : MonoBehaviour
 
     private const string END_WORD = "im_end";
     private string RAG_MODEL = "b09_c2";
-    [SerializeField]
     private string SYSTEM_MSG = @"
 너는 인어공주 연극을 하는 봇이야. 
 인덱스 데이터를 기반으로 상황에 대응하는 우르술라의 대사를 서로 이야기하듯 대답해줘.
