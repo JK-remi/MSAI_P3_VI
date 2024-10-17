@@ -27,10 +27,20 @@ public class GameManager : MonoBehaviour
     private bool isResponseEnd = false;
 
     public YouTubeChat panelLiveChat;
+    public int curCharCnt = 0;
+
+    [Header("UI")]
+    public List<PanelBase> uiObjects = new List<PanelBase>();
+    private PanelBase curPanel;
 
     private void Awake()
     {
         Init();
+    }
+
+    private void Start()
+    {
+        OpenUI(ePanel.FirstInfo);
     }
 
     private void Init()
@@ -96,5 +106,19 @@ public class GameManager : MonoBehaviour
     public void SetVoice(string name, float pitch, float rate, float vol)
     {
         tts.SetVoice(name, pitch, rate, vol);
+    }
+
+    public void OpenUI(ePanel ui)
+    {
+        if (uiObjects == null || uiObjects.Count == 0) return;
+
+        PanelBase prevPanel = curPanel;
+        curPanel = uiObjects[(int)ui];
+
+        if(prevPanel != null)
+        {
+            prevPanel.Close();
+        }
+        curPanel.Open();
     }
 }
