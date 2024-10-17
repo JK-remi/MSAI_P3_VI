@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public List<PanelBase> uiObjects = new List<PanelBase>();
-    private PanelBase curPanel;
+    public PanelBase curPanel { get; private set; }
 
     private void Awake()
     {
@@ -120,5 +120,20 @@ public class GameManager : MonoBehaviour
             prevPanel.Close();
         }
         curPanel.Open();
+    }
+
+    public void OpenNotice(eNotice noticeType)
+    {
+        if (uiObjects == null || uiObjects.Count == 0) return;
+
+        Panel_Notice uiNotice = (Panel_Notice)uiObjects[(int)ePanel.Notice];
+        uiNotice.SetNotice(noticeType);
+        uiNotice.Open();
+    }
+
+    public void DeleteCharacter()
+    {
+        // UI modify toggle 삭제
+        // GameManger character list에서 해당 character delete
     }
 }
