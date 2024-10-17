@@ -18,6 +18,8 @@ public class Panel_FirstInfo : PanelBase
 
     protected override void Init()
     {
+        uiType = ePanel.FirstInfo;
+
         if(isVisited || PlayerPrefs.GetInt(PLAYER_PREF, 0) > 0)
         {
             isVisited = true;
