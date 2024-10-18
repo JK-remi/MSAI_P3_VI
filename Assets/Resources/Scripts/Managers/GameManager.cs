@@ -26,8 +26,10 @@ public class GameManager : MonoBehaviour
     private GPT gpt;
     private bool isResponseEnd = false;
 
-    public YouTubeChat panelLiveChat;
-    public int curCharCnt = 0;
+    [SerializeField]
+    private List<GameObject> charObjList = new List<GameObject>();
+    public int curCharCnt { get { return charObjList.Count; } }
+    public int curCharIdx = 0;
 
     [Header("UI")]
     public List<PanelBase> uiObjects = new List<PanelBase>();
@@ -57,6 +59,8 @@ public class GameManager : MonoBehaviour
     public void Send2GPT(string prompt)
     {
         if (isResponseEnd == false) return;
+
+        Panel_Streaming panelLiveChat = uiObjects[(int)ePanel.Streaming] as Panel_Streaming;
         if (panelLiveChat == null) return;
 
         isResponseEnd = false;
@@ -135,5 +139,12 @@ public class GameManager : MonoBehaviour
     {
         // UI modify toggle 삭제
         // GameManger character list에서 해당 character delete
+    }
+
+    public GameObject GetCharObj(int idx)
+    {
+        if (idx >= charObjList.Count) return null;
+
+        return charObjList[idx];
     }
 }

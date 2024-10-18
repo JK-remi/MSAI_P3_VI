@@ -1,7 +1,8 @@
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Globalization;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Utils
 {
@@ -53,4 +54,22 @@ public class Utils
                });
     }
 
+    public static Toggle AddCharToggle(ToggleGroup tglGroup, GameObject prefab)
+    {
+        if (tglGroup == null || prefab == null) return null;
+
+        GameObject go = GameObject.Instantiate(prefab, tglGroup.transform);
+        Toggle tgl = go.GetComponent<Toggle>();
+        if(tgl == null)
+        {
+            Debug.LogError("[Toggle] " + prefab.name + " has no toggle");
+            GameObject.Destroy(go);
+            return null;
+        }
+
+        tglGroup.RegisterToggle(tgl);
+        tgl.group = tglGroup;
+
+        return tgl;
+    }
 }
