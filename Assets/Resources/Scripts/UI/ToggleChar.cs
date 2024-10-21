@@ -30,7 +30,10 @@ public class ToggleChar : MonoBehaviour
 
     public void OnChange()
     {
-        GameManager.Instance.curCharIdx = charIdx;
+        if(tgl.isOn)
+        {
+            GameManager.Instance.curCharIdx = charIdx;
+        }
     }
 
     public void ToggleOn(bool isOn)

@@ -30,16 +30,6 @@ public class Panel_Streaming : PanelBase
 
     private List<ToggleChar> charList = new List<ToggleChar>();
 
-    private void OnEnable()
-    {
-        Init();
-    }
-
-    private void OnDisable()
-    {
-        Close();
-    }
-
     protected override void Init()
     {
         for(int i=0; i<GameManager.Instance.curCharCnt; i++)
@@ -66,11 +56,16 @@ public class Panel_Streaming : PanelBase
 
         if(charList.Count > 0)
         {
-            for(int i=0; i<charList.Count; i++)
+            for (int i=0; i<charList.Count; i++)
             {
-                DestroyImmediate(charList[i].gameObject);
+                if(GameManager.Instance.curCharIdx != i)
+                {
+                    charList[i].ToggleOn(false);
+                    DestroyImmediate(charList[i].gameObject);
+                }
             }
 
+            DestroyImmediate(charList[GameManager.Instance.curCharIdx].gameObject);
             charList.Clear();
         }
     }
