@@ -137,12 +137,19 @@ EXPRESSION_THRESHOLD = 0.6
 
 # 가중치 스케일링 팩터 (변동폭 조절)
 BLENDSHAPE_WEIGHT_SCALE_FACTOR = 1.5  # 일반 블렌드 쉐이프용
-MOUTH_SHAPE_WEIGHT_SCALE_FACTOR = 1.3  # 입 모양 블렌드 쉐이프용
+MOUTH_SHAPE_WEIGHT_SCALE_FACTOR = 1.6  # 입 모양 블렌드 쉐이프용
 
-# 가중치 최소 임계값 (35% 이하인 경우 0으로 설정)
+# 가중치 최소 임계값
 WEIGHT_THRESHOLD = 0.35
-# 가중치 최소 임계값 (입이 안움직이면 )
 WEIGHT_THRESHOLD_MOUTH = 0.1
+
+# 감쇠 계수 (0과 1 사이, 값이 작을수록 변화가 느려짐)
+SMOOTHING_FACTOR = 0.9  # 블렌드쉐이프 가중치에 대한 감쇠 계수
+SMOOTHING_FACTOR_EXPRESSION = 0.6  # 표정 점수에 대한 감쇠 계수
+
+# 이전 프레임의 데이터 저장용 변수 초기화
+prev_blendshape_data = None
+prev_expression_scores = None
 
 # 표정 점수 계산 함수
 def compute_expression_scores(blendshape_data):
@@ -212,13 +219,12 @@ def compute_mouth_shapes(blendshape_data):
     mouth_shapes["mouthShapeE"] = mouth_open * (1 - mouth_pucker) * mouth_wide
     mouth_shapes["mouthShapeO"] = mouth_funnel * mouth_open
 
-    # 각 모음 가중치에 임계값 및 스케일링 적용
+    # 각 모음 가중치에 임계값 적용
     for key in mouth_shapes:
-        # 스케일링 팩터 적용 (이미 적용됨)
         # 최대값을 1로 클램핑
         mouth_shapes[key] = min(mouth_shapes[key], 1.0)
         # 임계값 이하인 경우 0으로 설정
-        if mouth_shapes[key] < WEIGHT_THRESHOLD:
+        if mouth_shapes[key] < WEIGHT_THRESHOLD_MOUTH:
             mouth_shapes[key] = 0.0
 
     return mouth_shapes
@@ -266,42 +272,86 @@ while cap.isOpened():
 
     if face_result.face_blendshapes:
         blendshapes = face_result.face_blendshapes[0]
-        blendshape_data = {bs.category_name: bs.score for bs in blendshapes}
+        current_blendshape_data = {bs.category_name: bs.score for bs in blendshapes}
 
         # 블렌드 쉐이프 가중치 스케일링 팩터 적용 및 임계값 이하인 경우 0으로 설정
-        for key in blendshape_data:
+        for key in current_blendshape_data:
             # 입 모양 관련 블렌드 쉐이프는 제외
             if key in ["jawOpen", "mouthFunnel", "mouthPucker", "mouthStretchLeft", "mouthStretchRight"]:
                 continue
             # 스케일링 팩터 적용
-            blendshape_data[key] *= BLENDSHAPE_WEIGHT_SCALE_FACTOR
+            current_blendshape_data[key] *= BLENDSHAPE_WEIGHT_SCALE_FACTOR
             # 최대값을 1로 클램핑
-            blendshape_data[key] = min(blendshape_data[key], 1.0)
+            current_blendshape_data[key] = min(current_blendshape_data[key], 1.0)
             # 임계값 이하인 경우 0으로 설정
-            if blendshape_data[key] < WEIGHT_THRESHOLD:
-                blendshape_data[key] = 0.0
+            if current_blendshape_data[key] < WEIGHT_THRESHOLD:
+                current_blendshape_data[key] = 0.0
 
-        data['blendshapes'] = blendshape_data
+        # 이전 프레임과 현재 프레임의 블렌드쉐이프 가중치를 보간하여 부드럽게 변화
+        if prev_blendshape_data is None:
+            smoothed_blendshape_data = current_blendshape_data.copy()
+        else:
+            smoothed_blendshape_data = {}
+            for key in current_blendshape_data:
+                prev_value = prev_blendshape_data.get(key, 0.0)
+                current_value = current_blendshape_data[key]
+                smoothed_value = prev_value * (1 - SMOOTHING_FACTOR) + current_value * SMOOTHING_FACTOR
+                smoothed_blendshape_data[key] = smoothed_value
+
+        # 이전 프레임의 블렌드쉐이프 데이터 업데이트
+        prev_blendshape_data = smoothed_blendshape_data.copy()
+
+        data['blendshapes'] = smoothed_blendshape_data
 
         # 표정 점수 계산 및 'BlendShapeWeights' 데이터 추가
-        expression_scores = compute_expression_scores(blendshape_data)
-        data['BlendShapeWeights'] = expression_scores
+        expression_scores = compute_expression_scores(smoothed_blendshape_data)
+
+        # 이전 프레임과 현재 프레임의 표정 점수를 보간하여 부드럽게 변화
+        if prev_expression_scores is None:
+            smoothed_expression_scores = expression_scores.copy()
+        else:
+            smoothed_expression_scores = {}
+            for key in expression_scores:
+                prev_value = prev_expression_scores.get(key, 0.0)
+                current_value = expression_scores[key]
+                smoothed_value = prev_value * (1 - SMOOTHING_FACTOR_EXPRESSION) + current_value * SMOOTHING_FACTOR_EXPRESSION
+                smoothed_expression_scores[key] = smoothed_value
+
+        # 이전 프레임의 표정 점수 업데이트
+        prev_expression_scores = smoothed_expression_scores.copy()
+
+        data['BlendShapeWeights'] = smoothed_expression_scores
 
         # 가장 높은 점수의 표정을 선택
-        expression = max(expression_scores, key=expression_scores.get)
+        expression = max(smoothed_expression_scores, key=smoothed_expression_scores.get)
         data['expression'] = expression
 
         # BlendShapeWeights 중 하나라도 0이 아닌지 확인
-        is_expression_active = any(value > 0.0 for value in expression_scores.values())
+        is_expression_active = any(value > 0.2 for value in smoothed_expression_scores.values())
 
         # 표정이 적용되는 경우 눈 깜빡임을 0으로 설정
         if is_expression_active:
-            blendshape_data['eyeBlinkLeft'] = 0.0
-            blendshape_data['eyeBlinkRight'] = 0.0
+            smoothed_blendshape_data['eyeBlinkLeft'] = 0.0
+            smoothed_blendshape_data['eyeBlinkRight'] = 0.0
 
         # 입 모양 계산 및 추가
-        mouth_shapes = compute_mouth_shapes(blendshape_data)
-        data['blendshapes'].update(mouth_shapes)
+        mouth_shapes = compute_mouth_shapes(current_blendshape_data)
+
+        # 입 모양도 부드럽게 보간
+        if 'mouthShapes' not in prev_blendshape_data:
+            smoothed_mouth_shapes = mouth_shapes.copy()
+        else:
+            smoothed_mouth_shapes = {}
+            for key in mouth_shapes:
+                prev_value = prev_blendshape_data.get(key, 0.0)
+                current_value = mouth_shapes[key]
+                smoothed_value = prev_value * (1 - SMOOTHING_FACTOR) + current_value * SMOOTHING_FACTOR
+                smoothed_mouth_shapes[key] = smoothed_value
+
+        smoothed_blendshape_data.update(smoothed_mouth_shapes)
+
+        # 이전 프레임의 입 모양 데이터 업데이트
+        prev_blendshape_data.update(smoothed_mouth_shapes)
 
     # 손 랜드마크 처리
     if hand_result.hand_landmarks:
@@ -327,7 +377,7 @@ while cap.isOpened():
             )
 
     # 포즈 랜드마크 처리
-    if pose_result.pose_landmarks:
+    if pose_result.pose_landmarks:  # 변경됨: 포즈 랜드마크가 존재할 때만 처리
         pose_landmarks = pose_result.pose_landmarks[0]
         pose_landmarks_list = [[lmk.x, lmk.y, lmk.z] for lmk in pose_landmarks]
         data['pose'] = pose_landmarks_list
@@ -370,11 +420,16 @@ while cap.isOpened():
             pose_data = {'pose': data['pose']}
             json_pose_data = json.dumps(pose_data)
             sock_pose.sendto(json_pose_data.encode(), unity_pose_address)
+        else:
+            # 포즈 데이터가 없으면 모델이 T-포즈를 유지하도록 아무 동작도 하지 않음
+            pass  # 변경됨: 포즈 데이터가 없을 때는 전송하지 않음
+
         # 손 데이터 전송
         if 'hand_0' in data or 'hand_1' in data:
             hand_data = {k: v for k, v in data.items() if k.startswith('hand_')}
             json_hand_data = json.dumps(hand_data)
             sock_hand.sendto(json_hand_data.encode(), unity_hand_address)
+
         # 얼굴 데이터 전송
         if 'blendshapes' in data or 'expression' in data or 'BlendShapeWeights' in data:
             face_data = {}
