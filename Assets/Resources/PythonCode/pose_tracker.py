@@ -4,6 +4,7 @@ import numpy as np
 import socket
 import json
 import os
+import math
 from mediapipe.framework.formats import landmark_pb2
 
 # MediaPipe 솔루션 초기화
@@ -56,7 +57,7 @@ pose_landmarker = PoseLandmarker.create_from_options(PoseLandmarkerOptions(
 
 cap = cv2.VideoCapture(0)
 
-# 기존 코드에서 소켓을 세 개 생성하여 각각 다른 포트로 데이터 전송
+# 소켓 생성
 sock_pose = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_hand = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_face = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -64,10 +65,170 @@ unity_pose_address = ('127.0.0.1', 5052)  # UnityChanPoseController용 포트
 unity_hand_address = ('127.0.0.1', 5053)  # MediapipeHandMapper용 포트
 unity_face_address = ('127.0.0.1', 5054)  # Face 데이터용 포트
 
+# 프레임 카운터 초기화
+frame_counter = 0
+
+# 데이터 저장 디렉토리 생성
+output_dir = os.path.join(current_dir, 'output_data')
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# 표정 판정에 필요한 함수 및 데이터 정의
+# 각 표정에 대한 특징 벡터 정의 (값 조정)
+expressions = {
+    "neutral": {
+        # 모든 블렌드셰이프 값이 거의 0에 가까움
+        "features": {}
+    },
+    "angry": {
+        "features": {
+            "browDownLeft": 0.8,
+            "browDownRight": 0.8,
+            "browInnerUp": 0.2,
+            "eyeSquintLeft": 0.5,
+            "eyeSquintRight": 0.5,
+            "mouthFrownLeft": 0.5,
+            "mouthFrownRight": 0.5,
+            "jawForward": 0.3
+        }
+    },
+    "fun": {
+        "features": {
+            "mouthSmileLeft": 0.7,
+            "mouthSmileRight": 0.7,
+            "cheekSquintLeft": 0.5,
+            "cheekSquintRight": 0.5,
+            "eyeSquintLeft": 0.3,
+            "eyeSquintRight": 0.3
+        }
+    },
+    "joy": {
+        "features": {
+            "mouthSmileLeft": 1.0,
+            "mouthSmileRight": 1.0,
+            "cheekSquintLeft": 0.5,
+            "cheekSquintRight": 0.5,
+            "eyeWideLeft": 0.2,
+            "eyeWideRight": 0.2
+        }
+    },
+    "sorrow": {
+        "features": {
+            "browInnerUp": 0.7,
+            "mouthFrownLeft": 0.6,
+            "mouthFrownRight": 0.6,
+            "jawOpen": 0.2
+        }
+    },
+    "surprised": {
+        "features": {
+            "browInnerUp": 1.0,
+            "browOuterUpLeft": 1.0,
+            "browOuterUpRight": 1.0,
+            "eyeWideLeft": 1.0,
+            "eyeWideRight": 1.0,
+            "jawOpen": 1.0
+        }
+    }
+}
+
+# 임계값 설정 (값을 높이면 판정이 더 유연해집니다)
+EXPRESSION_THRESHOLD = 0.6
+
+# 가중치 스케일링 팩터 (변동폭 조절)
+BLENDSHAPE_WEIGHT_SCALE_FACTOR = 1.5  # 일반 블렌드 쉐이프용
+MOUTH_SHAPE_WEIGHT_SCALE_FACTOR = 1.3  # 입 모양 블렌드 쉐이프용
+
+# 가중치 최소 임계값 (35% 이하인 경우 0으로 설정)
+WEIGHT_THRESHOLD = 0.35
+# 가중치 최소 임계값 (입이 안움직이면 )
+WEIGHT_THRESHOLD_MOUTH = 0.1
+
+# 표정 점수 계산 함수
+def compute_expression_scores(blendshape_data):
+    expression_scores = {}
+
+    for expression_name, expression_data in expressions.items():
+        distance = 0.0
+        for key in expression_data["features"]:
+            target_value = expression_data["features"].get(key, 0.0)
+            current_value = blendshape_data.get(key, 0.0)
+            distance += (target_value - current_value) ** 2
+        distance = math.sqrt(distance)
+        # 특징 벡터의 크기로 정규화
+        norm = math.sqrt(sum([v ** 2 for v in expression_data["features"].values()]))
+        if norm > 0:
+            similarity = 1 - (distance / norm)
+        else:
+            similarity = 0.0
+        # 0~1 사이로 클램핑
+        similarity = max(0.0, min(1.0, similarity))
+        # 스케일링 팩터 적용
+        similarity *= BLENDSHAPE_WEIGHT_SCALE_FACTOR
+        # 최대값을 1로 클램핑
+        similarity = min(similarity, 1.0)
+        # 임계값 이하인 경우 0으로 설정
+        if similarity < WEIGHT_THRESHOLD:
+            similarity = 0.0
+        expression_scores[expression_name] = similarity
+
+    return expression_scores
+
+# 입 모양 계산 함수 수정
+def compute_mouth_shapes(blendshape_data):
+    mouth_shapes = {}
+    # 간단한 로직; 필요에 따라 조정
+    mouth_open = blendshape_data.get("jawOpen", 0.0)
+    mouth_funnel = blendshape_data.get("mouthFunnel", 0.0)
+    mouth_pucker = blendshape_data.get("mouthPucker", 0.0)
+    mouth_wide = blendshape_data.get("mouthStretchLeft", 0.0) + blendshape_data.get("mouthStretchRight", 0.0)
+
+    # 가중치 스케일링 팩터 적용 (입 모양용)
+    mouth_open *= MOUTH_SHAPE_WEIGHT_SCALE_FACTOR
+    mouth_funnel *= MOUTH_SHAPE_WEIGHT_SCALE_FACTOR
+    mouth_pucker *= MOUTH_SHAPE_WEIGHT_SCALE_FACTOR
+    mouth_wide *= MOUTH_SHAPE_WEIGHT_SCALE_FACTOR
+
+    # 최대값을 1로 클램핑
+    mouth_open = min(mouth_open, 1.0)
+    mouth_funnel = min(mouth_funnel, 1.0)
+    mouth_pucker = min(mouth_pucker, 1.0)
+    mouth_wide = min(mouth_wide, 1.0)
+
+    # 임계값 이하인 경우 0으로 설정
+    if mouth_open < WEIGHT_THRESHOLD_MOUTH:
+        mouth_open = 0.0
+    if mouth_funnel < WEIGHT_THRESHOLD_MOUTH:
+        mouth_funnel = 0.0
+    if mouth_pucker < WEIGHT_THRESHOLD_MOUTH:
+        mouth_pucker = 0.0
+    if mouth_wide < WEIGHT_THRESHOLD_MOUTH:
+        mouth_wide = 0.0
+
+    # 각 모음에 대한 가중치 계산 (값은 조정 필요)
+    mouth_shapes["mouthShapeA"] = mouth_open * (1 - mouth_pucker)
+    mouth_shapes["mouthShapeI"] = mouth_wide * mouth_open
+    mouth_shapes["mouthShapeU"] = mouth_pucker * mouth_open
+    mouth_shapes["mouthShapeE"] = mouth_open * (1 - mouth_pucker) * mouth_wide
+    mouth_shapes["mouthShapeO"] = mouth_funnel * mouth_open
+
+    # 각 모음 가중치에 임계값 및 스케일링 적용
+    for key in mouth_shapes:
+        # 스케일링 팩터 적용 (이미 적용됨)
+        # 최대값을 1로 클램핑
+        mouth_shapes[key] = min(mouth_shapes[key], 1.0)
+        # 임계값 이하인 경우 0으로 설정
+        if mouth_shapes[key] < WEIGHT_THRESHOLD:
+            mouth_shapes[key] = 0.0
+
+    return mouth_shapes
+
 while cap.isOpened():
     success, image = cap.read()
     if not success:
         continue
+
+    frame_counter += 1  # 프레임 카운터 증가
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_rgb)
@@ -80,12 +241,11 @@ while cap.isOpened():
     black_image = np.zeros((height, width, 3), dtype=np.uint8)
 
     data = {}
+    expression = "neutral"  # 기본값 설정
 
     # 얼굴 랜드마크 처리
     if face_result.face_landmarks:
         face_landmarks = face_result.face_landmarks[0]
-        face_landmarks_list = [[lmk.x, lmk.y, lmk.z] for lmk in face_landmarks]
-        data['face'] = face_landmarks_list
 
         # NormalizedLandmarkList 생성 및 변환
         face_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
@@ -107,7 +267,41 @@ while cap.isOpened():
     if face_result.face_blendshapes:
         blendshapes = face_result.face_blendshapes[0]
         blendshape_data = {bs.category_name: bs.score for bs in blendshapes}
+
+        # 블렌드 쉐이프 가중치 스케일링 팩터 적용 및 임계값 이하인 경우 0으로 설정
+        for key in blendshape_data:
+            # 입 모양 관련 블렌드 쉐이프는 제외
+            if key in ["jawOpen", "mouthFunnel", "mouthPucker", "mouthStretchLeft", "mouthStretchRight"]:
+                continue
+            # 스케일링 팩터 적용
+            blendshape_data[key] *= BLENDSHAPE_WEIGHT_SCALE_FACTOR
+            # 최대값을 1로 클램핑
+            blendshape_data[key] = min(blendshape_data[key], 1.0)
+            # 임계값 이하인 경우 0으로 설정
+            if blendshape_data[key] < WEIGHT_THRESHOLD:
+                blendshape_data[key] = 0.0
+
         data['blendshapes'] = blendshape_data
+
+        # 표정 점수 계산 및 'BlendShapeWeights' 데이터 추가
+        expression_scores = compute_expression_scores(blendshape_data)
+        data['BlendShapeWeights'] = expression_scores
+
+        # 가장 높은 점수의 표정을 선택
+        expression = max(expression_scores, key=expression_scores.get)
+        data['expression'] = expression
+
+        # BlendShapeWeights 중 하나라도 0이 아닌지 확인
+        is_expression_active = any(value > 0.0 for value in expression_scores.values())
+
+        # 표정이 적용되는 경우 눈 깜빡임을 0으로 설정
+        if is_expression_active:
+            blendshape_data['eyeBlinkLeft'] = 0.0
+            blendshape_data['eyeBlinkRight'] = 0.0
+
+        # 입 모양 계산 및 추가
+        mouth_shapes = compute_mouth_shapes(blendshape_data)
+        data['blendshapes'].update(mouth_shapes)
 
     # 손 랜드마크 처리
     if hand_result.hand_landmarks:
@@ -140,7 +334,7 @@ while cap.isOpened():
 
         # 특정 인덱스의 랜드마크를 제외하고 그리기
         pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-        excluded_indices = set(range(0, 11)) | set(range(17, 23))  # 0~10, 15~22
+        excluded_indices = set(range(0, 11)) | set(range(17, 23))  # 0~10, 17~22
         index_mapping = {}
         new_idx = 0
         for idx, lmk in enumerate(pose_landmarks):
@@ -169,7 +363,6 @@ while cap.isOpened():
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
         )
 
-
     # 데이터 전송 부분 수정
     if data:
         # 포즈 데이터 전송
@@ -183,14 +376,20 @@ while cap.isOpened():
             json_hand_data = json.dumps(hand_data)
             sock_hand.sendto(json_hand_data.encode(), unity_hand_address)
         # 얼굴 데이터 전송
-        if 'face' in data or 'blendshapes' in data:
+        if 'blendshapes' in data or 'expression' in data or 'BlendShapeWeights' in data:
             face_data = {}
-            if 'face' in data:
-                face_data['face'] = data['face']
             if 'blendshapes' in data:
                 face_data['blendshapes'] = data['blendshapes']
+            if 'expression' in data:
+                face_data['expression'] = data['expression']
+            if 'BlendShapeWeights' in data:
+                face_data['BlendShapeWeights'] = data['BlendShapeWeights']
             json_face_data = json.dumps(face_data)
             sock_face.sendto(json_face_data.encode(), unity_face_address)
+            # 데이터 저장
+            # face_file_path = os.path.join(output_dir, f'face_data_{frame_counter}.json')
+            # with open(face_file_path, 'w') as f:
+            #     f.write(json_face_data)
 
     # 결과 이미지 표시
     cv2.imshow('MediaPipe Multi-model Landmarker', cv2.flip(black_image, 1))
