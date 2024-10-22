@@ -1,11 +1,9 @@
-using Newtonsoft.Json;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class Panel_Create : PanelBase
@@ -26,6 +24,8 @@ public class Panel_Create : PanelBase
 
     [Header("Panel_Personal")]
     public TextMeshProUGUI txtFileName;
+    private OpenFileDialog dialogOpen;
+    private Stream streamOpen = null;
 
     public TextMeshProUGUI txtPersonalTitle;
     public TMP_InputField inputPersonality;
@@ -36,8 +36,7 @@ public class Panel_Create : PanelBase
     public FewshotElement prefabFewshot;
     private List<FewshotElement> listFewshot = new List<FewshotElement>();
 
-    private OpenFileDialog dialogOpen;
-    private Stream streamOpen = null;
+    public UnityEngine.UI.Button btnSave;
 
     protected void Start()
     {
@@ -45,6 +44,11 @@ public class Panel_Create : PanelBase
         dialogOpen.Filter = "txt files (*.txt)|*.txt";
         dialogOpen.FilterIndex = 1;
         //dialogOpen.Title
+    }
+
+    protected void Update()
+    {
+        btnSave.interactable = IsSaveBtnActive();
     }
 
     protected override void Init()
@@ -62,6 +66,7 @@ public class Panel_Create : PanelBase
 
         // panel voice setting
         inputLine.text = Utils.BASE_LINE;
+        voiceList.Init();
         GameManager.Instance.SetTTSLine(inputLine.text);
 
         // panel personal setting
@@ -77,6 +82,8 @@ public class Panel_Create : PanelBase
         listFewshot.Add(baseFewshot);
 
         scrollFewshot.verticalNormalizedPosition = 0f;
+
+        btnSave.interactable = false;
     }
 
     public override void Close()
@@ -163,8 +170,23 @@ public class Panel_Create : PanelBase
         listFewshot.RemoveAt(idx);
     }
 
+    public bool IsSaveBtnActive()
+    {
+        // appearance setting check
+        bool result = selectedIdx >= 0;
+        result = result && inputName.text != string.Empty;
+
+        // voice setting check
+        result = result && voiceList.IsAllSetting();
+
+        // personality setting check
+        result = result && inputPersonality.text != string.Empty;
+        result = result && (baseFewshot.inputQ.text != string.Empty && baseFewshot.inputA.text != string.Empty);
+        return result;
+    }
+
     public void OnSave()
     {
-
+        
     }
 }
