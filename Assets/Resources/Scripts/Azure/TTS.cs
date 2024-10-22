@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class TTS : MonoBehaviour
 {
@@ -116,8 +117,7 @@ public class TTS : MonoBehaviour
 
     private IEnumerator TTS_Procedure(GameObject btn)
     {
-        if (btn != null)
-            btn.SetActive(false);
+        ButtonSwitch(btn, false);
 
         yield return GetToken();
 
@@ -130,13 +130,28 @@ public class TTS : MonoBehaviour
             yield return RequestTTS();
         }
 
+        ButtonSwitch(btn, true);
+    }
+
+    private void ButtonSwitch(GameObject btn, bool isOn)
+    {
         if (btn != null)
-            btn.SetActive(true);
+        {
+            Button button = btn.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = isOn;
+            }
+            else
+            {
+                btn.SetActive(isOn);
+            }
+        }
     }
 
     public void StartTTS(string text)
     {
-        line = text;
+        OnChangeLine(text);
         StartCoroutine(TTS_Procedure(null));
     }
     public void OnPlay(GameObject btn)
@@ -146,7 +161,12 @@ public class TTS : MonoBehaviour
 
     public void OnChangeLine(TMP_InputField input)
     {
-        line = input.text;
+        OnChangeLine(input.text);
+    }
+
+    public void OnChangeLine(string text)
+    {
+        line = text;
     }
 
     public void SetVoice(string name, float pitch, float rate, float vol)

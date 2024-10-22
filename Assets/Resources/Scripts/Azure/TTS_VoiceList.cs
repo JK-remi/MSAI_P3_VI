@@ -21,7 +21,6 @@ public class TTS_VoiceList : MonoBehaviour
     private const string SELECTED_ALL = "All";
 
     private VoiceData curVoice;
-
     private List<VoiceData> voiceList = new List<VoiceData>();
 
     public TMP_Dropdown dropdown_region;
@@ -135,7 +134,5 @@ public class TTS_VoiceList : MonoBehaviour
     {
         GameManager.Instance.SetVoice(curVoice.ShortName, slider_pitch.value, slider_rate.value, slider_volume.value);
         GameManager.Instance.Send2TTS(btnPlay);
-        //parentTTS.SetVoice(curVoice.ShortName, dropdown_Role.captionText.text, dropdown_Style.captionText.text, 
-        //    slider_pitch.value, slider_rate.value, slider_volume.value);
     }
 }
