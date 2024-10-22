@@ -9,6 +9,7 @@ public class SliderText : MonoBehaviour
 {
     public Slider parentSlider;
     public TMP_InputField valueInput;
+    public TextMeshProUGUI txtVal;
 
     private void Start()
     {
@@ -26,6 +27,11 @@ public class SliderText : MonoBehaviour
         if (valueInput)
         {
             valueInput.text = ConvertFloat2Percentage(parentSlider.value);
+        }
+
+        if(txtVal)
+        {
+            txtVal.text = ConvertFloat2Percentage(parentSlider.value);
         }
     }
 
