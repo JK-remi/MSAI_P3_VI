@@ -96,7 +96,6 @@ public class Panel_Notice : PanelBase
                 }
             case eNotice.ETC_SUGGEST:
                 {
-                    Debug.Log("[Notice] 의견 제시 리셋중...");
                     // 메시지 전송 후 reset
                     GameManager.Instance.curPanel.ResetUI();
                     break;
@@ -113,6 +112,11 @@ public class Panel_Notice : PanelBase
             case eNotice.CREATE_OVER:
                 {
                     GameManager.Instance.OpenUI(ePanel.Modify);
+                    break;
+                }
+            case eNotice.ETC_SUGGEST:
+                {
+                    GameManager.Instance.curPanel.ResetUI();
                     break;
                 }
         }
