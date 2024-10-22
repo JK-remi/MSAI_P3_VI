@@ -12,14 +12,6 @@ public class Panel_Notice : PanelBase
     private PanelBase prevPanel;
     private eNotice typeNotice;
 
-#if UNITY_EDITOR
-    public eNotice tempNotiType;
-    private void Awake()
-    {
-        SetNotice(tempNotiType);
-    }
-#endif
-
     protected override void Init()
     {
         uiType = ePanel.Notice;
