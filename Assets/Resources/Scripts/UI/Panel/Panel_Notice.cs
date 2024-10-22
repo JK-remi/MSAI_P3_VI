@@ -93,7 +93,7 @@ public class Panel_Notice : PanelBase
             case eNotice.CREATE_FILE_COPYRIGHT:
                 {
                     // 파일 선택 창 띄우기
-                    Debug.Log("[Notice] 파일 선택창 열려요.");
+                    GameManager.Instance.curPanel.OnFileOpen();
                     break;
                 }
             case eNotice.MODIFY_DELETE:

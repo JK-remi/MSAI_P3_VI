@@ -29,4 +29,6 @@ public class PanelBase : MonoBehaviour
     {
         this.gameObject.SetActive(false);
     }
+
+    public virtual void OnFileOpen() { }
 }
