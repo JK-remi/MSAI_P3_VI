@@ -38,6 +38,19 @@ public class TTS_VoiceList : MonoBehaviour
         StartCoroutine(GetVoiceList());
     }
 
+    public void Init()
+    {
+        dropdown_region.value = -1;
+        dropdown_Sex.value = -1;
+        dropdown_Name.value = -1;
+        dropdown_Role.value = -1;
+        dropdown_Style.value = -1;
+     
+        slider_pitch.value = 0;
+        slider_rate.value = 0;
+        slider_volume.value = 0;
+    }
+
     private IEnumerator GetVoiceList()
     {
         UnityWebRequest request = UnityWebRequest.Get(AzureUrls.VOICE_LIST_URL);
