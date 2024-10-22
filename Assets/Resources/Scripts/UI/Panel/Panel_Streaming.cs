@@ -19,9 +19,10 @@ public class Panel_Streaming : PanelBase
 
     public ToggleGroup tglCharList;
 
-    public GameObject chatMessagePrefab;
-    public GameObject tglCharPrefab;
     public ScrollRect scrollRect; // ScrollRect 변수를 추가
+    public GameObject chatMessagePrefab;
+    private List<GameObject> chatList = new List<GameObject>();
+    public GameObject tglCharPrefab;
 
     private string liveChatId;
     private string nextPageToken;
@@ -67,6 +68,16 @@ public class Panel_Streaming : PanelBase
 
             DestroyImmediate(charList[GameManager.Instance.curCharIdx].gameObject);
             charList.Clear();
+        }
+
+        if(chatList.Count > 0)
+        {
+            for(int i=0; i<chatList.Count; i++)
+            {
+                DestroyImmediate(chatList[i]);
+            }
+
+            chatList.Clear();
         }
 
         base.Close();
@@ -181,13 +192,15 @@ public class Panel_Streaming : PanelBase
 
         GameObject newMessage = Instantiate(chatMessagePrefab, scrollRect.content.transform);
 
-        var textComponent = newMessage.GetComponent<TMP_Text>();
+        TMP_Text textComponent = newMessage.GetComponent<TMP_Text>();
         if (textComponent == null)
         {
             VideoID_Failed("chatMessagePrefab에 TMP_Text 컴포넌트가 없습니다.");
+            DestroyImmediate(newMessage);
             return;
         }
 
+        chatList.Add(newMessage);
         textComponent.text = message;
 
         // 스크롤뷰를 아래로 스크롤

@@ -8,6 +8,10 @@ public class Utils
 {
     public const float AUDIO_REACTOR_FACTOR = 32767f; //to convert float to Int16
 
+    public const string BASE_LINE = "Hello Everyone. Nice to meet you. Are your READY for make some noise!!!";
+    public const string PERSONALITY_TITLE = " 은/는 어떤 성격을 가지고 있나요?";
+    public const string FEWSHOT_TITLE = " 은/는 어떤식으로 대화하나요?";
+    public const long FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
 
     public static string GetFilePath(string filename)
     {
