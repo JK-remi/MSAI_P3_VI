@@ -5,36 +5,33 @@ using System;
 
 public class MediapipeHandMapper : MonoBehaviour
 {
-    // 왼손 뼈대
     public Transform leftRootBone; // 왼손 루트 본
-    public Transform[] leftIndexBones;  // 왼손 검지손가락의 뼈대
+    public Transform[] leftIndexBones;
     public Transform[] leftMiddleBones;
     public Transform[] leftRingBones;
     public Transform[] leftLittleBones;
     public Transform[] leftThumbBones;
-    public Transform[] leftOtherBones; // 기타 왼손 랜드마크에 해당하는 뼈대
+    public Transform[] leftOtherBones;
 
-    // 오른손 뼈대
-    public Transform rightRootBone; // 오른손 루트 본
-    public Transform[] rightIndexBones;  // 오른손 검지손가락의 뼈대
+    public Transform rightRootBone;
+    public Transform[] rightIndexBones;
     public Transform[] rightMiddleBones;
     public Transform[] rightRingBones;
     public Transform[] rightLittleBones;
     public Transform[] rightThumbBones;
-    public Transform[] rightOtherBones; // 기타 오른손 랜드마크에 해당하는 뼈대
+    public Transform[] rightOtherBones;
 
-    private Vector3[] leftHandLandmarks; // 왼손 랜드마크 저장
-    private Vector3[] rightHandLandmarks; // 오른손 랜드마크 저장
+    private Vector3[] leftHandLandmarks;
+    private Vector3[] rightHandLandmarks;
     private Quaternion initialLeftRootRotation;
     private Quaternion initialRightRootRotation;
     private bool leftHandDetected;
     private bool rightHandDetected;
 
     private UdpReceiver udpReceiver;
-    public int port = 5053; // Python 스크립트와 일치하는 포트 번호
-    private object lockObject = new object(); // 스레드 안전성을 위한 락 오브젝트
+    public int port = 5053;
+    private object lockObject = new object();
 
-    // 각 뼈대의 초기 로컬 회전값 저장
     private Quaternion[] initialLeftThumbRotations;
     private Quaternion[] initialLeftIndexRotations;
     private Quaternion[] initialLeftMiddleRotations;
@@ -49,14 +46,13 @@ public class MediapipeHandMapper : MonoBehaviour
 
     void Start()
     {
-        leftHandLandmarks = new Vector3[21]; // 왼손에 대한 21개의 랜드마크
-        rightHandLandmarks = new Vector3[21]; // 오른손에 대한 21개의 랜드마크
+        leftHandLandmarks = new Vector3[21];
+        rightHandLandmarks = new Vector3[21];
         initialLeftRootRotation = leftRootBone.rotation;
         initialRightRootRotation = rightRootBone.rotation;
         leftHandDetected = false;
         rightHandDetected = false;
 
-        // 각 뼈대의 초기 로컬 회전값 저장
         initialLeftThumbRotations = GetInitialLocalRotations(leftThumbBones);
         initialLeftIndexRotations = GetInitialLocalRotations(leftIndexBones);
         initialLeftMiddleRotations = GetInitialLocalRotations(leftMiddleBones);
@@ -69,7 +65,6 @@ public class MediapipeHandMapper : MonoBehaviour
         initialRightRingRotations = GetInitialLocalRotations(rightRingBones);
         initialRightLittleRotations = GetInitialLocalRotations(rightLittleBones);
 
-        // UDP 리스너 시작
         udpReceiver = new UdpReceiver(port);
         udpReceiver.OnDataReceived += HandleReceivedData;
         udpReceiver.Start();
@@ -117,12 +112,11 @@ public class MediapipeHandMapper : MonoBehaviour
                             {
                                 var point = handData[i];
                                 float x = point[0];
-                                float y = 1 - point[1]; // Y축 반전
+                                float y = 1 - point[1];
                                 float z = -point[2];
                                 landmarks[i] = new Vector3(x, y, z);
                             }
 
-                            // 단순히 hand_0을 왼손, hand_1을 오른손으로 매핑
                             if (key == "hand_0")
                             {
                                 leftHandLandmarks = landmarks;
@@ -154,7 +148,6 @@ public class MediapipeHandMapper : MonoBehaviour
             }
             else
             {
-                // 왼손이 감지되지 않은 경우 루트 본을 초기 회전 상태로 유지
                 leftRootBone.rotation = initialLeftRootRotation;
             }
 
@@ -164,7 +157,6 @@ public class MediapipeHandMapper : MonoBehaviour
             }
             else
             {
-                // 오른손이 감지되지 않은 경우 루트 본을 초기 회전 상태로 유지
                 rightRootBone.rotation = initialRightRootRotation;
             }
         }
@@ -178,33 +170,45 @@ public class MediapipeHandMapper : MonoBehaviour
         Transform[] thumbBones, Quaternion[] initialThumbRotations,
         Transform[] otherBones)
     {
-        // 루트 본 회전을 랜드마크를 기반으로 업데이트
+        // 손목 회전 업데이트
         UpdateRootBoneRotation(handLandmarks, rootBone, initialRootRotation);
 
         // 손가락 뼈대 업데이트
-        MapFinger(handLandmarks, thumbBones, initialThumbRotations, new int[] { 1, 2, 3, 4 }); // 엄지손가락
-        MapFinger(handLandmarks, indexBones, initialIndexRotations, new int[] { 5, 6, 7, 8 }); // 검지손가락
-        MapFinger(handLandmarks, middleBones, initialMiddleRotations, new int[] { 9, 10, 11, 12 }); // 중지
-        MapFinger(handLandmarks, ringBones, initialRingRotations, new int[] { 13, 14, 15, 16 }); // 약지
-        MapFinger(handLandmarks, littleBones, initialLittleRotations, new int[] { 17, 18, 19, 20 }); // 새끼손가락
+        MapFinger(handLandmarks, thumbBones, new int[] { 1, 2, 3, 4 }); // 엄지손가락
+        MapFinger(handLandmarks, indexBones, new int[] { 5, 6, 7, 8 }); // 검지손가락
+        MapFinger(handLandmarks, middleBones, new int[] { 9, 10, 11, 12 }); // 중지
+        MapFinger(handLandmarks, ringBones, new int[] { 13, 14, 15, 16 }); // 약지
+        MapFinger(handLandmarks, littleBones, new int[] { 17, 18, 19, 20 }); // 새끼손가락
 
-        // 기타 랜드마크를 해당 뼈대에 매핑
+        // 기타 랜드마크 처리
         MapOtherBones(handLandmarks, otherBones);
     }
 
+
     void UpdateRootBoneRotation(Vector3[] handLandmarks, Transform rootBone, Quaternion initialRootRotation)
     {
-        // 랜드마크 0(손목)과 9(중지 기저부)를 사용하여 루트 본의 회전 계산
         Vector3 wristPosition = handLandmarks[0];
         Vector3 middleBasePosition = handLandmarks[9];
 
         Vector3 direction = middleBasePosition - wristPosition;
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        rootBone.rotation = targetRotation * initialRootRotation;
+        // 손바닥 노멀 벡터 계산
+        Vector3 palmRight = handLandmarks[17] - handLandmarks[5];
+        Vector3 palmNormal = Vector3.Cross(direction, palmRight).normalized;
+
+        // 업 벡터를 사용하여 회전 계산
+        Quaternion targetRotation = Quaternion.LookRotation(direction, palmNormal);
+
+        // 추가 회전 적용 (-90도 X축, -180도 Y축)
+        Quaternion additionalRotation = Quaternion.Euler(-90f, -180f, 90f);
+
+        // 최종 회전 적용
+        rootBone.rotation = targetRotation * additionalRotation * initialRootRotation;
     }
 
-    void MapFinger(Vector3[] handLandmarks, Transform[] fingerBones, Quaternion[] initialRotations, int[] landmarkIndices)
+
+
+    void MapFinger(Vector3[] handLandmarks, Transform[] fingerBones, int[] landmarkIndices)
     {
         for (int i = 0; i < fingerBones.Length && i < landmarkIndices.Length - 1; i++)
         {
@@ -212,16 +216,18 @@ public class MediapipeHandMapper : MonoBehaviour
             Vector3 to = handLandmarks[landmarkIndices[i + 1]];
 
             Vector3 direction = to - from;
-            Quaternion rotation = Quaternion.FromToRotation(Vector3.forward, direction.normalized);
 
-            fingerBones[i].localRotation = rotation * initialRotations[i];
+            // 벡터의 순서를 바꿉니다.
+            Quaternion rotation = Quaternion.FromToRotation(direction.normalized, Vector3.up);
+
+            fingerBones[i].localRotation = rotation;
         }
     }
 
+
+
     void MapOtherBones(Vector3[] handLandmarks, Transform[] otherBones)
     {
-        // 기타 뼈대 매핑, 예를 들어 손목
-        // otherBones[0]이 랜드마크 0(손목)에 해당한다고 가정
         if (otherBones.Length > 0)
         {
             otherBones[0].position = handLandmarks[0];
