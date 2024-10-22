@@ -112,6 +112,11 @@ public class GameManager : MonoBehaviour
         tts.SetVoice(name, pitch, rate, vol);
     }
 
+    public void SetTTSLine(string text)
+    {
+        tts.OnChangeLine(text);
+    }
+
     public void OpenUI(ePanel ui)
     {
         if (uiObjects == null || uiObjects.Count == 0) return;
