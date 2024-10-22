@@ -68,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter text...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -409,8 +409,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter text...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
-  m_sharedMaterial: {fileID: 5164960594321742880, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
+  m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -716,7 +716,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_GlobalFontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
@@ -1025,7 +1025,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 11400000, guid: 4ffe16103c134dd46a67f25729cebe36, type: 2}
+  m_GlobalFontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
@@ -1041,6 +1041,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1766827881617679672}
+  - component: {fileID: 9053517075555393626}
   m_Layer: 5
   m_Name: FewShotElement
   m_TagString: Untagged
@@ -1071,8 +1072,23 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1080, y: 200}
+  m_SizeDelta: {x: 1080, y: 225}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &9053517075555393626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5405071290225722039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e77b61f8ca51b94c8607f3ef02058aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  txtName: {fileID: 8714286719405547725}
+  inputQ: {fileID: 592112631166389698}
+  inputA: {fileID: 1594929008883801819}
 --- !u!1 &5803733459586330721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,4 +1686,16 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3068845057755600253}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9053517075555393626}
+        m_TargetAssemblyTypeName: FewshotElement, Assembly-CSharp
+        m_MethodName: OnDelete
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
