@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class VoiceData
 {
-    public string DisplayName;
-    public string ShortName;
-    public string Gender;
-    public string Locale;
-    public string LocaleName;
+    public string DisplayName;  // short name (ex. Adri)
+    public string ShortName;    // full name (ex. af-ZA-AdriNeural)
+    public string Gender;       
+    public string Locale;       // region initial (ex. af-ZA)
+    public string LocaleName;   // region full (ex. Afrikaans (Sourth Africa))
     public List<string> StyleList;
     public List<string> RolePlayList;
 }
@@ -21,6 +21,7 @@ public class TTS_VoiceList : MonoBehaviour
     private const string SELECTED_ALL = "All";
 
     private VoiceData curVoice;
+    public VoiceData CurVoice { get { return curVoice; } }
     private List<VoiceData> voiceList = new List<VoiceData>();
 
     public TMP_Dropdown dropdown_region;
@@ -147,5 +148,10 @@ public class TTS_VoiceList : MonoBehaviour
     {
         GameManager.Instance.SetVoice(curVoice.ShortName, slider_pitch.value, slider_rate.value, slider_volume.value);
         GameManager.Instance.Send2TTS(btnPlay);
+    }
+
+    public bool IsAllSetting()
+    {
+        return curVoice != null;
     }
 }
