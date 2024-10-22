@@ -44,7 +44,7 @@ public class Panel_Streaming : PanelBase
         }
     }
 
-    public override void ResetUI()
+    public override void Close()
     {
         if (corLiveChat != null)
         {
@@ -68,11 +68,6 @@ public class Panel_Streaming : PanelBase
             DestroyImmediate(charList[GameManager.Instance.curCharIdx].gameObject);
             charList.Clear();
         }
-    }
-
-    public override void Close()
-    {
-        ResetUI();
 
         base.Close();
     }
