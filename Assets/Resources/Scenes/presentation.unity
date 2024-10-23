@@ -869,15 +869,9 @@ MonoBehaviour:
   - mediaType: 0
     image: {fileID: 21300000, guid: e7dd76a2920061544a0e356152962af0, type: 3}
     video: {fileID: 0}
-  - mediaType: 1
-    image: {fileID: 0}
-    video: {fileID: 32900000, guid: 578dc84fa14a346439f5b4ecdd2224ec, type: 3}
   - mediaType: 0
     image: {fileID: 21300000, guid: 9fd4fbb9684b48345ab4b73aa2327092, type: 3}
     video: {fileID: 0}
-  - mediaType: 1
-    image: {fileID: 0}
-    video: {fileID: 32900000, guid: b9fdb82038cb1a84ea37edcb82af284d, type: 3}
   - mediaType: 0
     image: {fileID: 21300000, guid: 7daffa12bfae5804d8300d3464b4df73, type: 3}
     video: {fileID: 0}
@@ -886,6 +880,12 @@ MonoBehaviour:
     video: {fileID: 0}
   - mediaType: 0
     image: {fileID: 21300000, guid: 4cd9c90961d4b3a459fca1021ef9120a, type: 3}
+    video: {fileID: 0}
+  - mediaType: 0
+    image: {fileID: 0}
+    video: {fileID: 0}
+  - mediaType: 0
+    image: {fileID: 0}
     video: {fileID: 0}
   imageDisplay: {fileID: 410646302}
   videoPlayer: {fileID: 826442773}
