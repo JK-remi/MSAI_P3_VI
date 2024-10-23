@@ -3600,6 +3600,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentSlider: {fileID: 8885606294415152348}
   valueInput: {fileID: 0}
+  txtVal: {fileID: 0}
 --- !u!1 &1521124715792051888
 GameObject:
   m_ObjectHideFlags: 0
@@ -6639,6 +6640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentSlider: {fileID: 1841307182157098772}
   valueInput: {fileID: 0}
+  txtVal: {fileID: 0}
 --- !u!1 &3549211544798547946
 GameObject:
   m_ObjectHideFlags: 0
@@ -15946,6 +15948,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentSlider: {fileID: 5107727387918899227}
   valueInput: {fileID: 0}
+  txtVal: {fileID: 0}
 --- !u!1 &7410952119879334330
 GameObject:
   m_ObjectHideFlags: 0
