@@ -144,14 +144,14 @@ public class Panel_Modify : Panel_Create
         int idx = FindActivateTgl();
         if (idx == -1) return;
 
-        GameManager.Instance.DelCharInfo(charInfo.ID);
-     
         charList[idx].ToggleOn(false);
         charList[idx].charObj.SetActive(false);
         DestroyImmediate(charList[idx].gameObject);
         charList.RemoveAt(idx);
 
         ChangeChar(charInfo);
+
+        GameManager.Instance.DelCharInfo(charInfo.ID);
     }
 
     private int FindActivateTgl()

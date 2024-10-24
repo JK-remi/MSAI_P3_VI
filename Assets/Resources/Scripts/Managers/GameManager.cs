@@ -195,6 +195,12 @@ public class GameManager : MonoBehaviour
 
             SaveCharInfo();
         }
+
+        if(charDic.Count == 0)
+        {
+            curCharInfo = null;
+            OpenUI(ePanel.Create);
+        }
     }
 
     private const string CHAR_INFO_FILE = "/data.json";
