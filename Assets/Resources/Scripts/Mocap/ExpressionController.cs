@@ -5,7 +5,7 @@ using System;
 
 public class ExpressionController : MonoBehaviour
 {
-    [SerializeField] private SkinnedMeshRenderer faceMeshRenderer;
+    public SkinnedMeshRenderer faceMeshRenderer;
     private UdpReceiver udpReceiver;
     private const int port = 5054;
 

@@ -6,20 +6,20 @@ using System;
 public class MediapipeHandMapper : MonoBehaviour
 {
     public Transform leftRootBone; // 왼손 루트 본
-    public Transform[] leftIndexBones;
-    public Transform[] leftMiddleBones;
-    public Transform[] leftRingBones;
-    public Transform[] leftLittleBones;
-    public Transform[] leftThumbBones;
-    public Transform[] leftOtherBones;
+    public List<Transform> leftIndexBones = new List<Transform>(3);
+    public List<Transform> leftMiddleBones = new List<Transform>(3);
+    public List<Transform> leftRingBones = new List<Transform>(3);
+    public List<Transform> leftLittleBones = new List<Transform>(3);
+    public List<Transform> leftThumbBones = new List<Transform>(3);
+    public List<Transform> leftOtherBones;
 
     public Transform rightRootBone;
-    public Transform[] rightIndexBones;
-    public Transform[] rightMiddleBones;
-    public Transform[] rightRingBones;
-    public Transform[] rightLittleBones;
-    public Transform[] rightThumbBones;
-    public Transform[] rightOtherBones;
+    public List<Transform> rightIndexBones = new List<Transform>(3);
+    public List<Transform> rightMiddleBones = new List<Transform>(3);
+    public List<Transform> rightRingBones = new List<Transform>(3);
+    public List<Transform> rightLittleBones = new List<Transform>(3);
+    public List<Transform> rightThumbBones = new List<Transform>(3);
+    public List<Transform> rightOtherBones;
 
     private Vector3[] leftHandLandmarks;
     private Vector3[] rightHandLandmarks;
@@ -29,7 +29,7 @@ public class MediapipeHandMapper : MonoBehaviour
     private bool rightHandDetected;
 
     private UdpReceiver udpReceiver;
-    public int port = 5053;
+    private int port = 5053;
     private object lockObject = new object();
 
     private Quaternion[] initialLeftThumbRotations;
@@ -70,10 +70,10 @@ public class MediapipeHandMapper : MonoBehaviour
         udpReceiver.Start();
     }
 
-    Quaternion[] GetInitialLocalRotations(Transform[] bones)
+    Quaternion[] GetInitialLocalRotations(List<Transform> bones)
     {
-        Quaternion[] rotations = new Quaternion[bones.Length];
-        for (int i = 0; i < bones.Length; i++)
+        Quaternion[] rotations = new Quaternion[bones.Count];
+        for (int i = 0; i < bones.Count; i++)
         {
             rotations[i] = bones[i].localRotation;
         }
@@ -163,12 +163,12 @@ public class MediapipeHandMapper : MonoBehaviour
     }
 
     void UpdateHand(Vector3[] handLandmarks, Transform rootBone, Quaternion initialRootRotation,
-        Transform[] indexBones, Quaternion[] initialIndexRotations,
-        Transform[] middleBones, Quaternion[] initialMiddleRotations,
-        Transform[] ringBones, Quaternion[] initialRingRotations,
-        Transform[] littleBones, Quaternion[] initialLittleRotations,
-        Transform[] thumbBones, Quaternion[] initialThumbRotations,
-        Transform[] otherBones)
+        List<Transform> indexBones, Quaternion[] initialIndexRotations,
+        List<Transform> middleBones, Quaternion[] initialMiddleRotations,
+        List<Transform> ringBones, Quaternion[] initialRingRotations,
+        List<Transform> littleBones, Quaternion[] initialLittleRotations,
+        List<Transform> thumbBones, Quaternion[] initialThumbRotations,
+        List<Transform> otherBones)
     {
         // 손목 회전 업데이트
         UpdateRootBoneRotation(handLandmarks, rootBone, initialRootRotation);
@@ -208,9 +208,9 @@ public class MediapipeHandMapper : MonoBehaviour
 
 
 
-    void MapFinger(Vector3[] handLandmarks, Transform[] fingerBones, int[] landmarkIndices)
+    void MapFinger(Vector3[] handLandmarks, List<Transform> fingerBones, int[] landmarkIndices)
     {
-        for (int i = 0; i < fingerBones.Length && i < landmarkIndices.Length - 1; i++)
+        for (int i = 0; i < fingerBones.Count && i < landmarkIndices.Length - 1; i++)
         {
             Vector3 from = handLandmarks[landmarkIndices[i]];
             Vector3 to = handLandmarks[landmarkIndices[i + 1]];
@@ -226,9 +226,9 @@ public class MediapipeHandMapper : MonoBehaviour
 
 
 
-    void MapOtherBones(Vector3[] handLandmarks, Transform[] otherBones)
+    void MapOtherBones(Vector3[] handLandmarks, List<Transform> otherBones)
     {
-        if (otherBones.Length > 0)
+        if (otherBones.Count > 0)
         {
             otherBones[0].position = handLandmarks[0];
         }
