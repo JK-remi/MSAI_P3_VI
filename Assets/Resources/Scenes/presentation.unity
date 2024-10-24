@@ -225,7 +225,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 858.19, y: -463.72}
+  m_AnchoredPosition: {x: 851, y: 456}
   m_SizeDelta: {x: 203.6261, y: 152.5687}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &94029729
@@ -1222,7 +1222,6 @@ MonoBehaviour:
   - {fileID: 834871192}
   - {fileID: 1141389421}
   rightOtherBones: []
-  port: 5053
 --- !u!114 &1818814004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1344,6 +1343,10 @@ PrefabInstance:
     - target: {fileID: 5111528636415174783, guid: edb5feefa27b585419aeccdd43ef3f5e, type: 3}
       propertyPath: m_Name
       value: NEXA
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111528636415174783, guid: edb5feefa27b585419aeccdd43ef3f5e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5594628088650740421, guid: edb5feefa27b585419aeccdd43ef3f5e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1834,7 +1837,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -858.19, y: -463.72}
+  m_AnchoredPosition: {x: -856, y: 458}
   m_SizeDelta: {x: 203.6261, y: 152.5687}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2045191408
