@@ -74,6 +74,8 @@ public class Panel_Modify : Panel_Create
         listFewshot.Clear();
         listFewshot.Add(baseFewshot);
 
+        OnConvClose();
+
         base.ResetUI();
     }
 
@@ -169,5 +171,10 @@ public class Panel_Modify : Panel_Create
         }
 
         return idx;
+    }
+
+    public new void OnConvOpen()
+    {
+        GameManager.Instance.SetGPTInfo(GameManager.Instance.curCharInfo);
     }
 }
