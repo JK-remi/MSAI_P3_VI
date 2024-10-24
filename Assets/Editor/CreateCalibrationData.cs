@@ -1,11 +1,7 @@
-using UnityEditor;
-using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEditor.UI;
-using static Unity.VisualScripting.Member;
-using static UnityEngine.GraphicsBuffer;
 
 
 public class CreateCalibrationData : EditorWindow
@@ -34,18 +30,88 @@ public class CreateCalibrationData : EditorWindow
         if (GUILayout.Button("Create"))
         {
             if (animator != null)
+            {
                 Calibrate();
+                HandMapping();
+                Expression();
+            }
         }
+    }
+
+    void Expression()
+    {
+        ExpressionController exp = animator.GetComponent<ExpressionController>();
+        if(exp == null)
+        {
+            exp = animator.AddComponent<ExpressionController>();
+        }
+
+        Transform face = animator.transform.Find("Face");
+        if (face == null) return;
+
+        exp.faceMeshRenderer = face.GetComponent<SkinnedMeshRenderer>();    
+    }
+
+    void HandMapping()
+    {
+        MediapipeHandMapper hand = animator.GetComponent<MediapipeHandMapper>();
+        if(hand == null)
+        {
+            hand = animator.AddComponent<MediapipeHandMapper>();
+        }
+
+        hand.leftRootBone = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+        hand.leftThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbProximal));
+        hand.leftThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbIntermediate));
+        hand.leftThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbDistal));
+
+        hand.leftIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftIndexProximal));
+        hand.leftIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftIndexIntermediate));
+        hand.leftIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftIndexDistal));
+
+        hand.leftMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftMiddleProximal));
+        hand.leftMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftMiddleIntermediate));
+        hand.leftMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftMiddleDistal));
+
+        hand.leftRingBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftRingProximal));
+        hand.leftRingBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftRingIntermediate));
+        hand.leftRingBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftRingDistal));
+
+        hand.leftLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbProximal));
+        hand.leftLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbIntermediate));
+        hand.leftLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.LeftThumbDistal));
+
+        hand.rightRootBone = animator.GetBoneTransform(HumanBodyBones.RightHand);
+        hand.rightThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbProximal));
+        hand.rightThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbIntermediate));
+        hand.rightThumbBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbDistal));
+
+        hand.rightIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.RightIndexProximal));
+        hand.rightIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.RightIndexIntermediate));
+        hand.rightIndexBones.Add(animator.GetBoneTransform(HumanBodyBones.RightIndexDistal));
+
+        hand.rightMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightMiddleProximal));
+        hand.rightMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightMiddleIntermediate));
+        hand.rightMiddleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightMiddleDistal));
+
+        hand.rightRingBones.Add(animator.GetBoneTransform(HumanBodyBones.RightRingProximal));
+        hand.rightRingBones.Add(animator.GetBoneTransform(HumanBodyBones.RightRingIntermediate));
+        hand.rightRingBones.Add(animator.GetBoneTransform(HumanBodyBones.RightRingDistal));
+
+        hand.rightLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbProximal));
+        hand.rightLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbIntermediate));
+        hand.rightLittleBones.Add(animator.GetBoneTransform(HumanBodyBones.RightThumbDistal));
     }
 
     void Calibrate()
     {
-        PersistentCalibrationData calibrationData = PersistentCalibrationData.CreateData(animator.name);
+        PersistentCalibrationData calibrationData = PersistentCalibrationData.CreateData(animator.name + "_calibration");
         UnityChanPoseController poseController = animator.GetComponent<UnityChanPoseController>(); 
-        if(poseController != null)
+        if(poseController == null)
         {
-            poseController.calibrationData = calibrationData;
+            poseController = animator.AddComponent<UnityChanPoseController>();
         }
+        poseController.calibrationData = calibrationData;
 
         parentCalibrationData.Clear();
         //Dictionary<HumanBodyBones, CalibrationData> parentCalibrationData = new Dictionary<HumanBodyBones, CalibrationData>();
