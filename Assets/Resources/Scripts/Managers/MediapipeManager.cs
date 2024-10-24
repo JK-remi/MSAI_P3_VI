@@ -48,6 +48,11 @@ public class MediapipeManager : MonoBehaviour
         ActivateUdpReceiver(BODY_PORT, HandleReceivedData_Body, out bodyUdpRecv);
         ActivateUdpReceiver(HAND_PORT, HandleReceivedData_Hand, out handUdpRecv);
         ActivateUdpReceiver(FACE_PORT, HandleReceivedData_Face, out faceUdpRecv);
+
+        if(curCharacter != null)
+        {
+            ActivateCharacter(curCharacter);
+        }
     }
 
     private void ActivateUdpReceiver(int port, UdpReceiver.DataReceivedHandler handler, out UdpReceiver receiver)
