@@ -68,10 +68,10 @@ unity_face_address = ('127.0.0.1', 5054)  # Face 데이터용 포트
 # 프레임 카운터 초기화
 frame_counter = 0
 
-# 데이터 저장 디렉토리 생성
-output_dir = os.path.join(current_dir, 'output_data')
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+# # 데이터 저장 디렉토리 생성
+# output_dir = os.path.join(current_dir, 'output_data')
+# if not os.path.exists(output_dir):
+#     os.makedirs(output_dir)
 
 # 표정 판정에 필요한 함수 및 데이터 정의
 # 각 표정에 대한 특징 벡터 정의 (값 조정)
