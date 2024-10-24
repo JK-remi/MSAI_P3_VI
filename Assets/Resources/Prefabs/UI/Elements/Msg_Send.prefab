@@ -159,7 +159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7840967750157330212}
   - component: {fileID: 8315983345851730360}
-  - component: {fileID: 7766110150594419545}
+  - component: {fileID: 5949824645498423114}
   m_Layer: 5
   m_Name: Msg_Send
   m_TagString: Untagged
@@ -213,7 +213,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &7766110150594419545
+--- !u!114 &5949824645498423114
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,10 +222,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5809677038156018501}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6148847d1d8a94649a6bbc21c144cbe3, type: 3}
+  m_Script: {fileID: 11500000, guid: e77f918f176a5e348922c947675b29b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  msgText: {fileID: 4337356854356929896}
+  txtMessage: {fileID: 4337356854356929896}
 --- !u!1 &7926997660646298236
 GameObject:
   m_ObjectHideFlags: 0
