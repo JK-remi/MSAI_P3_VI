@@ -90,7 +90,6 @@ public class Panel_Notice : PanelBase
                 }
             case eNotice.MODIFY_DELETE:
                 {
-                    Debug.Log("[Notice] 캐릭터 삭제해요.");
                     GameManager.Instance.DeleteCharacter();
                     break;
                 }

@@ -1,6 +1,12 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,8 +34,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> charObjList = new List<GameObject>();
-    public int curCharCnt { get { return charObjList.Count; } }
-    public int curCharIdx = 0;
+    private Dictionary<string, CharInfo> charDic = new Dictionary<string, CharInfo>();
+    public int curCharCnt { get { return charDic.Count; } }
+    public CharInfo curCharInfo;
 
     [Header("UI")]
     public List<PanelBase> uiObjects = new List<PanelBase>();
@@ -54,6 +61,8 @@ public class GameManager : MonoBehaviour
         gpt = this.GetComponent<GPT>();
 
         isResponseEnd = true;
+
+        LoadCharInfo();
     }
 
     public void Send2GPT(string prompt)
@@ -142,8 +151,10 @@ public class GameManager : MonoBehaviour
 
     public void DeleteCharacter()
     {
-        // UI modify toggle 삭제
-        // GameManger character list에서 해당 character delete
+        if (uiObjects == null || uiObjects.Count == 0) return;
+
+        Panel_Modify uiNotice = (Panel_Modify)uiObjects[(int)ePanel.Modify];
+        uiNotice.OnDelete();
     }
 
     public GameObject GetCharObj(int idx)
@@ -151,5 +162,98 @@ public class GameManager : MonoBehaviour
         if (idx >= charObjList.Count) return null;
 
         return charObjList[idx];
+    }
+
+    public void AddCharInfo(CharInfo info)
+    {
+        if(charDic.ContainsKey(info.ID) == false)
+        {
+            charDic.Add(info.ID, info);
+
+            SaveCharInfo();
+        }
+    }
+
+    public void ModiCharInfo(CharInfo info)
+    {
+        if (charDic.ContainsKey(info.ID) == true)
+        {
+            charDic[info.ID] = info;
+
+            SaveCharInfo();
+        }
+    }
+
+    public void DelCharInfo(string ID)
+    {
+        if(charDic.ContainsKey(ID))
+        {
+            charDic.Remove(ID);
+
+            SaveCharInfo();
+        }
+    }
+
+    private const string CHAR_INFO_FILE = "/data.json";
+    private void SaveCharInfo()
+    {
+        string json = JsonConvert.SerializeObject(charDic);
+        File.WriteAllText(Application.persistentDataPath + CHAR_INFO_FILE, json);
+    }
+
+    private void LoadCharInfo()
+    {
+        string json = File.ReadAllText(Application.persistentDataPath + CHAR_INFO_FILE);
+        charDic = JsonConvert.DeserializeObject<Dictionary<string, CharInfo>>(json);
+
+        if(charDic.Count > 0)
+        {
+            curCharInfo = charDic.Values.ElementAt<CharInfo>(0);
+        }
+    }
+
+    public List<ToggleChar> SetCharTglList(ToggleGroup tglGroup, GameObject tglPrefab, TextMeshProUGUI txtName)
+    {
+        List<ToggleChar> charList = new List<ToggleChar>();
+
+        foreach(var info in charDic)
+        {
+            ToggleChar tglChar = AddCharacter(tglGroup, tglPrefab, info.Value);
+            if(tglChar != null)
+            {
+                tglChar.txtName_streaming = txtName;
+                charList.Add(tglChar);
+            }
+        }
+
+        return charList;
+    }
+
+    private ToggleChar AddCharacter(ToggleGroup tglGroup, GameObject tglPrefab, CharInfo info)
+    {
+        Toggle tgl = Utils.AddCharToggle(tglGroup, tglPrefab);
+        if (tgl == null) return null;
+
+        ToggleChar tglChar = tgl.GetComponent<ToggleChar>();
+        SetCharacterInfo(tglChar, info);
+        
+        return tglChar;
+    }
+
+    private void SetCharacterInfo(ToggleChar tglChar, CharInfo info)
+    {
+        if (tglChar == null) return;
+
+        // char info에 맞는 object를 game manager에서 가져와서 toggle에 설정(임시)
+        tglChar.Init(info);
+        tglChar.ToggleOn(false);
+    }
+
+    public void ChangeCurChar(CharInfo info)
+    {
+        curCharInfo = info;
+
+        gpt.Init(info);
+        tts.SetVoice(info.Voice);
     }
 }

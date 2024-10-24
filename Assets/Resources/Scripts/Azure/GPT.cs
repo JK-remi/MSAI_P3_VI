@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -71,7 +72,6 @@ public class GPT_SimpleData
 
 public class GPT : MonoBehaviour
 {
-
     private const string END_WORD = "im_end";
     private string RAG_MODEL = "b09_c2";
     private string SYSTEM_MSG = @"
@@ -98,6 +98,22 @@ public class GPT : MonoBehaviour
     private void Start()
     {
         isProgress = false;
+    }
+
+    private CharInfo charInfo;
+    public void Init(CharInfo info)
+    {
+        charInfo = info;
+
+        // 기획 내용에 따라 내용 추가 (personality + filter(제약조건) + grounding text(filename))
+        SYSTEM_MSG = info.Personality;
+
+        if(File.Exists(info.FilePath))
+        {
+            string ground = File.ReadAllText(info.FilePath);
+            //Debug.Log(ground);
+        }
+        // fewshot 설정
     }
 
     public void SetSystem(string sys_msg, string rag)
@@ -145,9 +161,18 @@ public class GPT : MonoBehaviour
         {
             GPT_SimpleData data = new GPT_SimpleData();
             data.messages.Add(new GPT_Message("system", SYSTEM_MSG));
-            data.messages.Add(new GPT_Message("user", prompt));
+            if(charInfo != null && charInfo.Fewshots != null)
+            {
+                foreach(Fewshot temp in charInfo.Fewshots)
+                {
+                    data.messages.Add(new GPT_Message("user", temp.q));
+                    data.messages.Add(new GPT_Message("assistant", temp.a));
+                }
+            }
 
+            data.messages.Add(new GPT_Message("user", prompt));
             strBody = JsonUtility.ToJson(data);
+            Debug.Log(strBody);
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(strBody);
 

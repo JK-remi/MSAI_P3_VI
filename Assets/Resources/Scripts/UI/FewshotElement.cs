@@ -21,6 +21,14 @@ public class FewshotElement : MonoBehaviour
         txtName.text = string.Format("{0}:", name);
     }
 
+    public void Init(Panel_Create owner, int fewshotIdx, CharInfo info)
+    {
+        Init(owner, fewshotIdx, info.Name);
+
+        inputQ.text = info.Fewshots[fewshotIdx].q;
+        inputA.text = info.Fewshots[fewshotIdx].a;
+    }
+
     public void OnDelete()
     {
         ownerUI.DeleteFewshot(idx);

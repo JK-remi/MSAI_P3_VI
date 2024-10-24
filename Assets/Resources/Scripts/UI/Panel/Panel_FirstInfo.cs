@@ -24,14 +24,15 @@ public class Panel_FirstInfo : PanelBase
         {
             isVisited = true;
 
-            if(GameManager.Instance.curCharCnt > 0)
-            {
-                GameManager.Instance.OpenUI(ePanel.Modify);
-            }
-            else
-            {
-                GameManager.Instance.OpenUI(ePanel.Create);
-            }
+            GameManager.Instance.OpenUI(ePanel.Create);
+            //if(GameManager.Instance.curCharCnt > 0)
+            //{
+            //    GameManager.Instance.OpenUI(ePanel.Modify);
+            //}
+            //else
+            //{
+            //    GameManager.Instance.OpenUI(ePanel.Create);
+            //}
         }
     }
 

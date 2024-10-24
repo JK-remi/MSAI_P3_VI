@@ -33,15 +33,18 @@ public class Panel_Streaming : PanelBase
 
     protected override void Init()
     {
-        for(int i=0; i<GameManager.Instance.curCharCnt; i++)
-        {
-            // 해당 index(ID)의 캐릭터를 추가
-            AddCharacter(i);
-        }
+        charList = GameManager.Instance.SetCharTglList(tglCharList, tglCharPrefab, txtName);
+        txtMessage.text = string.Empty;
 
         if (charList.Count > 0)
         {
-            charList[GameManager.Instance.curCharIdx].ToggleOn(true);
+            for(int i=0; i<charList.Count; i++)
+            {
+                if(charList[i].charInfo == GameManager.Instance.curCharInfo)
+                {
+                    charList[i].ToggleOn(true);
+                }
+            }
         }
     }
 
@@ -57,16 +60,21 @@ public class Panel_Streaming : PanelBase
 
         if(charList.Count > 0)
         {
+            int curIdx = -1;
             for (int i=0; i<charList.Count; i++)
             {
-                if(GameManager.Instance.curCharIdx != i)
+                if(GameManager.Instance.curCharInfo != charList[i].charInfo)
                 {
                     charList[i].ToggleOn(false);
                     DestroyImmediate(charList[i].gameObject);
                 }
+                else
+                {
+                    curIdx = i;
+                }
             }
 
-            DestroyImmediate(charList[GameManager.Instance.curCharIdx].gameObject);
+            DestroyImmediate(charList[curIdx].gameObject);
             charList.Clear();
         }
 
@@ -241,28 +249,5 @@ public class Panel_Streaming : PanelBase
         {
             panelVideoID.SetActive(true);
         }
-    }
-
-    private void AddCharacter(int idx)
-    {
-        Toggle tgl = Utils.AddCharToggle(tglCharList, tglCharPrefab);
-        if (tgl == null) return;
-
-        ToggleChar info = tgl.GetComponent<ToggleChar>();
-        SetCharacterInfo(info, idx);
-        if(info != null)
-        {
-            charList.Add(info);
-        }
-    }
-
-    private void SetCharacterInfo(ToggleChar info, int idx)
-    {
-        if (info == null) return;
-
-        // char info에 맞는 object를 game manager에서 가져와서 toggle에 설정(임시)
-        info.Init(idx);
-
-        info.ToggleOn(false);
     }
 }

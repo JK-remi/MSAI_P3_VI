@@ -45,6 +45,6 @@ public class NoticeInfo
                                                     "",
                                                     "확인");
     public static Notice FILE_SIZE_OVER = new Notice("업로드 가능한 파일 크기를 초과하였습니다.",
-                                                    "업로드 가능한 파일 크기는 최대 10MB입니다.",
+                                                    "업로드 가능한 파일 크기는 최대 350KB입니다.",
                                                     "");
 }

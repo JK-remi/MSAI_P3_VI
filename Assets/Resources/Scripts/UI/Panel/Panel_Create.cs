@@ -34,7 +34,7 @@ public class Panel_Create : PanelBase
     public ScrollRect scrollFewshot;
     public FewshotElement baseFewshot;
     public FewshotElement prefabFewshot;
-    private List<FewshotElement> listFewshot = new List<FewshotElement>();
+    protected List<FewshotElement> listFewshot = new List<FewshotElement>();
 
     public UnityEngine.UI.Button btnSave;
 
@@ -173,8 +173,12 @@ public class Panel_Create : PanelBase
     public bool IsSaveBtnActive()
     {
         // appearance setting check
-        bool result = selectedIdx >= 0;
-        result = result && inputName.text != string.Empty;
+        bool result = true;
+        if(inputName != null)
+        {
+            result = result && selectedIdx >= 0;
+            result = result && inputName.text != string.Empty;
+        }
 
         // voice setting check
         result = result && voiceList.IsAllSetting();
@@ -187,6 +191,19 @@ public class Panel_Create : PanelBase
 
     public void OnSave()
     {
-        
+        string id = Guid.NewGuid().ToString();
+        VoiceInfo voice = new VoiceInfo(voiceList);
+
+        List<Fewshot> fewshots = new List<Fewshot>();
+        for (int i = 0; i < listFewshot.Count; i++)
+        {
+            // Q/A 둘 중 하나라도 비어 있으면 fewshot 인정 X
+            if (listFewshot[i].inputQ.text == string.Empty || listFewshot[i].inputA.text == string.Empty) continue;
+
+            fewshots.Add(new Fewshot(listFewshot[i].inputQ.text, listFewshot[i].inputA.text));
+        }
+
+        CharInfo info = new CharInfo(id, inputName.text, selectedIdx, voice, txtFileName.text, inputPersonality.text, fewshots);
+        GameManager.Instance.AddCharInfo(info);
     }
 }

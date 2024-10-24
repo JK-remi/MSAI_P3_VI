@@ -7,32 +7,51 @@ using UnityEngine.UI;
 public class ToggleChar : MonoBehaviour
 {
     public TextMeshProUGUI txtName;
+    public TextMeshProUGUI txtName_streaming;
     public GameObject charObj;
-    private int charIdx;
+    public CharInfo charInfo;
     private Toggle tgl;
+
+    private Panel_Modify uiOwner = null;
 
     private void Awake()
     {
         tgl = this.GetComponent<Toggle>();
     }
 
-    public void Init(int idx)
+    public void Init(CharInfo info)
     {
-        charIdx = idx;
+        charInfo = info;
 
-        charObj = GameManager.Instance.GetCharObj(idx);
-        txtName.text = charObj.name;
+        charObj = GameManager.Instance.GetCharObj(info.PrefabIdx);
+        txtName.text = info.Name;
 
         tgl.onValueChanged.RemoveAllListeners();
         tgl.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<bool>(charObj.SetActive));
         tgl.onValueChanged.AddListener(delegate { OnChange(); });
+
+        uiOwner = null;
+    }
+
+    public void SetOwner(Panel_Modify owner)
+    {
+        uiOwner = owner;
     }
 
     public void OnChange()
     {
         if(tgl.isOn)
         {
-            GameManager.Instance.curCharIdx = charIdx;
+            GameManager.Instance.ChangeCurChar(charInfo);
+            if(txtName_streaming != null)
+            {
+                txtName_streaming.text = charInfo.Name;
+            }
+
+            if(uiOwner != null)
+            {
+                uiOwner.ChangeChar(charInfo);
+            }
         }
     }
 

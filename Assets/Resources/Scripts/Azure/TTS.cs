@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -172,6 +173,11 @@ public class TTS : MonoBehaviour
     public void SetVoice(string name, float pitch, float rate, float vol)
     {
         SetVoice(name, "", "", pitch, rate, vol);
+    }
+
+    public void SetVoice(VoiceInfo data)
+    {
+        SetVoice(data.name, data.role, data.style, data.pitch, data.rate, data.volume);
     }
 
     public void SetVoice(string name, string role, string style, float pitch, float rate, float vol)

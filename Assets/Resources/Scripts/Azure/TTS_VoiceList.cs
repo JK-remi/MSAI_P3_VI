@@ -39,6 +39,19 @@ public class TTS_VoiceList : MonoBehaviour
         StartCoroutine(GetVoiceList());
     }
 
+    public void Init(CharInfo info)
+    {
+        dropdown_region.value = dropdown_region.options.FindIndex(option => option.text == info.Voice.region);
+        dropdown_Sex.value = dropdown_Sex.options.FindIndex(option => option.text == info.Voice.gender);
+        dropdown_Name.value = dropdown_Name.options.FindIndex(option => option.text == info.Voice.displayName);
+        dropdown_Role.value = dropdown_Role.options.FindIndex(option => option.text == info.Voice.role);
+        dropdown_Style.value = dropdown_Style.options.FindIndex(option => option.text == info.Voice.style);
+
+        slider_pitch.value = info.Voice.pitch;
+        slider_rate.value = info.Voice.rate;
+        slider_volume.value = info.Voice.volume;
+    }
+
     public void Init()
     {
         dropdown_region.value = -1;
