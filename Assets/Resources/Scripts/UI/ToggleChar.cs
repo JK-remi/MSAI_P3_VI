@@ -58,5 +58,6 @@ public class ToggleChar : MonoBehaviour
     public void ToggleOn(bool isOn)
     {
         tgl.isOn = isOn;
+        charObj.SetActive(isOn);
     }
 }

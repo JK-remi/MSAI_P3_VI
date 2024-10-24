@@ -172,6 +172,9 @@ public class GameManager : MonoBehaviour
 
             SaveCharInfo();
         }
+
+        curCharInfo = info;
+        OpenUI(ePanel.Modify);
     }
 
     public void ModiCharInfo(CharInfo info)
