@@ -203,7 +203,10 @@ public class GameManager : MonoBehaviour
 
     private void LoadCharInfo()
     {
-        string json = File.ReadAllText(Application.persistentDataPath + CHAR_INFO_FILE);
+        string filePath = Application.persistentDataPath + CHAR_INFO_FILE;
+        if (File.Exists(filePath) == false) return;
+
+        string json = File.ReadAllText(filePath);
         charDic = JsonConvert.DeserializeObject<Dictionary<string, CharInfo>>(json);
 
         if(charDic.Count > 0)
