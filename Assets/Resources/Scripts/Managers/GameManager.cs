@@ -65,6 +65,17 @@ public class GameManager : MonoBehaviour
         LoadCharInfo();
     }
 
+    public void Send2GPT(ChatMsg send, ChatMsg response)
+    {
+        if (isResponseEnd == false) return;
+
+        isResponseEnd = false;
+        Debug.Log("send to GPT");
+
+        gpt.uiText = response.txtMessage;
+        gpt.OnGPT(send.txtMessage.text);
+    }
+
     public void Send2GPT(string prompt)
     {
         if (isResponseEnd == false) return;
@@ -97,11 +108,21 @@ public class GameManager : MonoBehaviour
     {
         if (isSuccess)
         {
-            tts.StartTTS(gpt.uiText.text);
+            if(curPanel.uiType == ePanel.Streaming)
+            {
+                tts.StartTTS(gpt.uiText.text);
+            }
+            else
+            {
+                isResponseEnd = true;
+                ((Panel_Create)curPanel).OnResponse();
+            }
         }
         else
         {
             isResponseEnd = true;
+            if(curPanel.uiType == ePanel.Create || curPanel.uiType == ePanel.Modify)
+                ((Panel_Create)curPanel).OnResponse();
         }
     }
 
@@ -261,11 +282,22 @@ public class GameManager : MonoBehaviour
         tglChar.ToggleOn(false);
     }
 
+    public void SetGPTInfo(CharInfo info)
+    {
+        gpt.Init(info);
+    }
+
     public void ChangeCurChar(CharInfo info)
     {
         curCharInfo = info;
 
         gpt.Init(info);
         tts.SetVoice(info.Voice);
+    }
+
+    public void StopGPT()
+    {
+        gpt.Stop();
+        isResponseEnd = true;
     }
 }

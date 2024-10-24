@@ -38,6 +38,14 @@ public class Panel_Create : PanelBase
 
     public UnityEngine.UI.Button btnSave;
 
+    [Header("Panel_Conversaion")]
+    public ChatMsg sendPrefab;
+    public ChatMsg responsePrefab;
+    public ScrollRect scrollChat;
+
+    public TMP_InputField inputConvPrompt;
+    public UnityEngine.UI.Button btnSend;
+
     protected void Start()
     {
         dialogOpen = new OpenFileDialog();
@@ -207,5 +215,61 @@ public class Panel_Create : PanelBase
 
         CharInfo info = new CharInfo(id, inputName.text, selectedIdx, voice, txtFileName.text, inputPersonality.text, fewshots);
         GameManager.Instance.AddCharInfo(info);
+    }
+
+    public void OnConvOpen()
+    {
+        // create temp character info
+        List<Fewshot> fewshots = new List<Fewshot>();
+        for (int i = 0; i < listFewshot.Count; i++)
+        {
+            // Q/A 둘 중 하나라도 비어 있으면 fewshot 인정 X
+            if (listFewshot[i].inputQ.text == string.Empty || listFewshot[i].inputA.text == string.Empty) continue;
+
+            fewshots.Add(new Fewshot(listFewshot[i].inputQ.text, listFewshot[i].inputA.text));
+        }
+        CharInfo info = new CharInfo("", inputName.text, selectedIdx, null, txtFileName.text, inputPersonality.text, fewshots);
+
+        GameManager.Instance.SetGPTInfo(info);
+    }
+
+    public void OnConvClose()
+    {
+        foreach (Transform child in scrollChat.content)
+        {
+            Destroy(child.gameObject);
+        }
+
+        inputConvPrompt.interactable = true;
+        btnSend.interactable = true;
+
+        GameManager.Instance.StopGPT();
+    }
+
+    public void OnSend()
+    {
+        if (btnSend.interactable == false) return;
+
+        ChatMsg sendObj = Instantiate<ChatMsg>(sendPrefab, scrollChat.content);
+        sendObj.SetMessage(inputConvPrompt.text);
+
+        ChatMsg responseObj = Instantiate<ChatMsg>(responsePrefab, scrollChat.content);
+        responseObj.SetMessage(string.Empty);
+
+        GameManager.Instance.Send2GPT(sendObj, responseObj);
+
+        inputConvPrompt.text = string.Empty;
+        inputConvPrompt.interactable = false;
+        btnSend.interactable = false;
+
+        scrollChat.verticalNormalizedPosition = 0f;
+    }
+
+    public void OnResponse()
+    {
+        scrollChat.verticalNormalizedPosition = 0f;
+
+        inputConvPrompt.interactable = true;
+        btnSend.interactable = true;
     }
 }

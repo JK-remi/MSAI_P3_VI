@@ -5,17 +5,24 @@ using UnityEngine;
 
 public class ChatMsg : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Text txtMessage;
+    public TextMeshProUGUI txtMessage;
 
     private void Start()
     {
-        txtMessage = this.GetComponent<TMP_Text>();
+        if(txtMessage == null)
+        {
+            txtMessage = this.GetComponent<TextMeshProUGUI>();
+        }
     }
 
     public void OnClicked()
     {
         string msg = Utils.SubString(txtMessage.text, ":", 1);
         GameManager.Instance.Send2GPT(msg);
+    }
+
+    public void SetMessage(string msg)
+    {
+        txtMessage.text = msg;
     }
 }
