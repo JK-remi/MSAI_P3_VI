@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 751c219fa0bc7ea499d078bf52b4a0fb, type: 3}
+  m_Name: Luis_calibration
+  m_EditorClassIdentifier: 
+  parentCalibrationData:
+  - bone: 14
+    data:
+      parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_R_Shoulder/J_Bip_R_UpperArm/
+      childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_R_Shoulder/J_Bip_R_UpperArm/J_Bip_R_LowerArm/
+      lmParent: 12
+      lmChild: 14
+      initialDir: {x: -1, y: 0.0000010379097, z: -0.000000032434677}
+      initialRotation: {x: -0.00000008940697, y: 1.1361134e-11, z: -0.00000006094092, w: 1.0000001}
+      targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  - bone: 16
+    data:
+      parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_R_Shoulder/J_Bip_R_UpperArm/J_Bip_R_LowerArm/
+      childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_R_Shoulder/J_Bip_R_UpperArm/J_Bip_R_LowerArm/J_Bip_R_Hand/
+      lmParent: 14
+      lmChild: 16
+      initialDir: {x: -1, y: 0.000008358061, z: -0.00005830328}
+      initialRotation: {x: -0.00000008940697, y: -3.2376812e-10, z: -0.000000053443916, w: 1.0000001}
+      targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  - bone: 13
+    data:
+      parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_L_Shoulder/J_Bip_L_UpperArm/
+      childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_L_Shoulder/J_Bip_L_UpperArm/J_Bip_L_LowerArm/
+      lmParent: 11
+      lmChild: 13
+      initialDir: {x: 1, y: 0.00000051895483, z: -0.000000032434677}
+      initialRotation: {x: -0.00000008940697, y: -0.0000000010645429, z: -0.000000060173, w: 1.0000001}
+      targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  - bone: 15
+    data:
+      parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_L_Shoulder/J_Bip_L_UpperArm/J_Bip_L_LowerArm/
+      childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_L_Shoulder/J_Bip_L_UpperArm/J_Bip_L_LowerArm/J_Bip_L_Hand/
+      lmParent: 13
+      lmChild: 15
+      initialDir: {x: 1, y: 0.000008358061, z: -0.000058129153}
+      initialRotation: {x: -0.00000008940697, y: -0.000000092373725, z: -0.000000067676325, w: 1.0000001}
+      targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  spineUpDown:
+    parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/
+    childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_C_Neck/
+    lmParent: -1
+    lmChild: -1
+    initialDir: {x: -3.0762071e-16, y: 0.9895511, z: 0.14418241}
+    initialRotation: {x: -0.07566421, y: -0, z: -0, w: 0.99713343}
+    targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  hipsTwist:
+    parentn: Luis/Root/J_Bip_C_Hips/
+    childn: Luis/Root/J_Bip_C_Hips/
+    lmParent: 24
+    lmChild: 23
+    initialDir: {x: 0, y: 0, z: 0}
+    initialRotation: {x: -0.06289849, y: -0, z: -0, w: 0.99801993}
+    targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  chest:
+    parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/
+    childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/
+    lmParent: 24
+    lmChild: 23
+    initialDir: {x: 0, y: 0, z: 0}
+    initialRotation: {x: 0.060869828, y: -0, z: -0, w: 0.99814576}
+    targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  head:
+    parentn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_C_Neck/
+    childn: Luis/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_C_Neck/J_Bip_C_Head/
+    lmParent: -1
+    lmChild: 0
+    initialDir: {x: 0.07303416, y: 0.4054966, z: -0.9111742}
+    initialRotation: {x: -0.059730787, y: -0, z: -0, w: 0.99821454}
+    targetRotation: {x: 0, y: 0, z: 0, w: 0}
