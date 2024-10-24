@@ -33,6 +33,8 @@ public class Panel_Streaming : PanelBase
 
     protected override void Init()
     {
+        uiType = ePanel.Streaming;
+
         charList = GameManager.Instance.SetCharTglList(tglCharList, tglCharPrefab, txtName);
         txtMessage.text = string.Empty;
 

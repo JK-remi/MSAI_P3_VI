@@ -11,6 +11,8 @@ public class Panel_ETC : PanelBase
 
     protected override void Init()
     {
+        uiType = ePanel.ETC;
+
         inputPros.text = string.Empty;
         inputCons.text = string.Empty;
         inputEmail.text = string.Empty;

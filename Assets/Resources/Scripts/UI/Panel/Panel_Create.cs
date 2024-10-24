@@ -53,6 +53,8 @@ public class Panel_Create : PanelBase
 
     protected override void Init()
     {
+        uiType = ePanel.Create;
+
         tglMenu[0].isOn = true;
 
         // panel appearance setting

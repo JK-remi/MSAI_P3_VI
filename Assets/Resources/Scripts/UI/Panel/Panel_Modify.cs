@@ -14,6 +14,8 @@ public class Panel_Modify : Panel_Create
 
     protected override void Init()
     {
+        uiType = ePanel.Modify;
+
         charList = GameManager.Instance.SetCharTglList(tglGroup, tglCharPrefab, null);
         if (charList.Count > 0)
         {
