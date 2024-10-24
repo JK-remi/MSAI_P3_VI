@@ -52,6 +52,12 @@ public class ToggleChar : MonoBehaviour
             {
                 uiOwner.ChangeChar(charInfo);
             }
+
+            MediapipeManager.Instance.ActivateCharacter(charObj);
+        }
+        else
+        {
+            MediapipeManager.Instance.DeActivateCharacter(charObj);
         }
     }
 

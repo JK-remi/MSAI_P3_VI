@@ -21,16 +21,10 @@ public class MediapipeHandMapper : MonoBehaviour
     public List<Transform> rightThumbBones = new List<Transform>(3);
     public List<Transform> rightOtherBones;
 
-    private Vector3[] leftHandLandmarks;
-    private Vector3[] rightHandLandmarks;
     private Quaternion initialLeftRootRotation;
     private Quaternion initialRightRootRotation;
-    private bool leftHandDetected;
-    private bool rightHandDetected;
 
     private UdpReceiver udpReceiver;
-    private int port = 5053;
-    private object lockObject = new object();
 
     private Quaternion[] initialLeftThumbRotations;
     private Quaternion[] initialLeftIndexRotations;
@@ -44,14 +38,20 @@ public class MediapipeHandMapper : MonoBehaviour
     private Quaternion[] initialRightRingRotations;
     private Quaternion[] initialRightLittleRotations;
 
+    public void Activate(UdpReceiver receiver)
+    {
+        udpReceiver = receiver;
+    }
+
+    public void Deactivate()
+    {
+        udpReceiver = null;
+    }
+
     void Start()
     {
-        leftHandLandmarks = new Vector3[21];
-        rightHandLandmarks = new Vector3[21];
         initialLeftRootRotation = leftRootBone.rotation;
         initialRightRootRotation = rightRootBone.rotation;
-        leftHandDetected = false;
-        rightHandDetected = false;
 
         initialLeftThumbRotations = GetInitialLocalRotations(leftThumbBones);
         initialLeftIndexRotations = GetInitialLocalRotations(leftIndexBones);
@@ -64,10 +64,6 @@ public class MediapipeHandMapper : MonoBehaviour
         initialRightMiddleRotations = GetInitialLocalRotations(rightMiddleBones);
         initialRightRingRotations = GetInitialLocalRotations(rightRingBones);
         initialRightLittleRotations = GetInitialLocalRotations(rightLittleBones);
-
-        udpReceiver = new UdpReceiver(port);
-        udpReceiver.OnDataReceived += HandleReceivedData;
-        udpReceiver.Start();
     }
 
     Quaternion[] GetInitialLocalRotations(List<Transform> bones)
@@ -80,80 +76,24 @@ public class MediapipeHandMapper : MonoBehaviour
         return rotations;
     }
 
-    void OnApplicationQuit()
-    {
-        if (udpReceiver != null)
-            udpReceiver.Stop();
-    }
-
-    void HandleReceivedData(string data)
-    {
-        try
-        {
-            var parsedData = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
-            lock (lockObject)
-            {
-                leftHandDetected = false;
-                rightHandDetected = false;
-
-                foreach (var key in parsedData.Keys)
-                {
-                    if (key.StartsWith("hand_"))
-                    {
-                        var handDataRaw = parsedData[key];
-                        var handDataJson = handDataRaw.ToString();
-
-                        List<List<float>> handData = JsonConvert.DeserializeObject<List<List<float>>>(handDataJson);
-
-                        if (handData.Count == 21)
-                        {
-                            Vector3[] landmarks = new Vector3[21];
-                            for (int i = 0; i < 21; i++)
-                            {
-                                var point = handData[i];
-                                float x = point[0];
-                                float y = 1 - point[1];
-                                float z = -point[2];
-                                landmarks[i] = new Vector3(x, y, z);
-                            }
-
-                            if (key == "hand_0")
-                            {
-                                leftHandLandmarks = landmarks;
-                                leftHandDetected = true;
-                            }
-                            else if (key == "hand_1")
-                            {
-                                rightHandLandmarks = landmarks;
-                                rightHandDetected = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Failed to parse JSON: " + ex.Message);
-        }
-    }
-
     void Update()
     {
-        lock (lockObject)
+        if (udpReceiver == null) return;
+
+        lock (MediapipeManager.Instance.handLockObj)
         {
-            if (leftHandDetected)
+            if (MediapipeManager.Instance.leftHandDetected)
             {
-                UpdateHand(leftHandLandmarks, leftRootBone, initialLeftRootRotation, leftIndexBones, initialLeftIndexRotations, leftMiddleBones, initialLeftMiddleRotations, leftRingBones, initialLeftRingRotations, leftLittleBones, initialLeftLittleRotations, leftThumbBones, initialLeftThumbRotations, leftOtherBones);
+                UpdateHand(MediapipeManager.Instance.leftHandLandmarks, leftRootBone, initialLeftRootRotation, leftIndexBones, initialLeftIndexRotations, leftMiddleBones, initialLeftMiddleRotations, leftRingBones, initialLeftRingRotations, leftLittleBones, initialLeftLittleRotations, leftThumbBones, initialLeftThumbRotations, leftOtherBones);
             }
             else
             {
                 leftRootBone.rotation = initialLeftRootRotation;
             }
 
-            if (rightHandDetected)
+            if (MediapipeManager.Instance.rightHandDetected)
             {
-                UpdateHand(rightHandLandmarks, rightRootBone, initialRightRootRotation, rightIndexBones, initialRightIndexRotations, rightMiddleBones, initialRightMiddleRotations, rightRingBones, initialRightRingRotations, rightLittleBones, initialRightLittleRotations, rightThumbBones, initialRightThumbRotations, rightOtherBones);
+                UpdateHand(MediapipeManager.Instance.rightHandLandmarks, rightRootBone, initialRightRootRotation, rightIndexBones, initialRightIndexRotations, rightMiddleBones, initialRightMiddleRotations, rightRingBones, initialRightRingRotations, rightLittleBones, initialRightLittleRotations, rightThumbBones, initialRightThumbRotations, rightOtherBones);
             }
             else
             {
@@ -206,8 +146,6 @@ public class MediapipeHandMapper : MonoBehaviour
         rootBone.rotation = targetRotation * additionalRotation * initialRootRotation;
     }
 
-
-
     void MapFinger(Vector3[] handLandmarks, List<Transform> fingerBones, int[] landmarkIndices)
     {
         for (int i = 0; i < fingerBones.Count && i < landmarkIndices.Length - 1; i++)
@@ -223,8 +161,6 @@ public class MediapipeHandMapper : MonoBehaviour
             fingerBones[i].localRotation = rotation;
         }
     }
-
-
 
     void MapOtherBones(Vector3[] handLandmarks, List<Transform> otherBones)
     {

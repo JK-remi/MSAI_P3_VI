@@ -7,11 +7,6 @@ public class ExpressionController : MonoBehaviour
 {
     public SkinnedMeshRenderer faceMeshRenderer;
     private UdpReceiver udpReceiver;
-    private const int port = 5054;
-
-    private readonly object expressionLock = new object();
-    private Dictionary<string, float> newBlendShapeWeights = new Dictionary<string, float>();
-    private bool newExpressionData = false;
 
     // 블렌드 쉐이프 이름과 인덱스 매핑
     private Dictionary<string, int> blendShapeNameToIndex = new Dictionary<string, int>()
@@ -34,79 +29,26 @@ public class ExpressionController : MonoBehaviour
         {"mouthShapeO", 43}, // Fcl_MTH_O
     };
 
-    void Start()
+    public void Activate(UdpReceiver receiver)
     {
-        udpReceiver = new UdpReceiver(port);
-        udpReceiver.OnDataReceived += HandleReceivedData;
-        udpReceiver.Start();
+        udpReceiver = receiver;
     }
 
-    void OnDestroy()
+    public void Deactivate()
     {
-        if (udpReceiver != null)
-        {
-            udpReceiver.Stop();
-            udpReceiver = null;
-        }
-    }
-
-    void HandleReceivedData(string data)
-    {
-        try
-        {
-            Dictionary<string, object> receivedData = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
-
-            Dictionary<string, float> receivedWeights = new Dictionary<string, float>();
-
-            if (receivedData.ContainsKey("BlendShapeWeights"))
-            {
-                var blendShapeWeightsJson = receivedData["BlendShapeWeights"].ToString();
-                Dictionary<string, float> blendShapeWeights = JsonConvert.DeserializeObject<Dictionary<string, float>>(blendShapeWeightsJson);
-
-                foreach (var kvp in blendShapeWeights)
-                {
-                    receivedWeights[kvp.Key] = kvp.Value;
-                }
-            }
-
-            if (receivedData.ContainsKey("blendshapes"))
-            {
-                var blendshapesJson = receivedData["blendshapes"].ToString();
-                Dictionary<string, float> blendshapes = JsonConvert.DeserializeObject<Dictionary<string, float>>(blendshapesJson);
-
-                foreach (var kvp in blendshapes)
-                {
-                    // 입 모양에 필요한 키만 추출
-                    if (kvp.Key == "eyeBlinkLeft" || kvp.Key == "eyeBlinkRight" ||
-                        kvp.Key == "mouthShapeA" || kvp.Key == "mouthShapeI" ||
-                        kvp.Key == "mouthShapeU" || kvp.Key == "mouthShapeE" ||
-                        kvp.Key == "mouthShapeO")
-                    {
-                        receivedWeights[kvp.Key] = kvp.Value;
-                    }
-                }
-            }
-
-            lock (expressionLock)
-            {
-                newBlendShapeWeights = receivedWeights;
-                newExpressionData = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("블렌드 쉐이프 가중치 데이터 파싱 중 오류 발생: " + ex.Message);
-        }
+        udpReceiver = null;
     }
 
     void Update()
     {
-        lock (expressionLock)
+        if (udpReceiver == null) return;
+
+        lock (MediapipeManager.Instance.faceLockObj)
         {
-            if (newExpressionData)
+            if (MediapipeManager.Instance.newExpressionData)
             {
-                ApplyBlendShapeWeights(newBlendShapeWeights);
-                newExpressionData = false;
+                ApplyBlendShapeWeights(MediapipeManager.Instance.newBlendShapeWeights);
+                MediapipeManager.Instance.newExpressionData = false;
             }
         }
     }
@@ -142,11 +84,5 @@ public class ExpressionController : MonoBehaviour
         {
             Debug.LogError("SkinnedMeshRenderer가 할당되지 않았습니다.");
         }
-    }
-
-    void OnApplicationQuit()
-    {
-        if (udpReceiver != null)
-            udpReceiver.Stop();
     }
 }

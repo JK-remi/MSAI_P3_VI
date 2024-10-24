@@ -42,14 +42,23 @@ public class UnityChanPoseController : MonoBehaviour
     private Dictionary<HumanBodyBones, CalibrationData> parentCalibrationData = new Dictionary<HumanBodyBones, CalibrationData>();
     private CalibrationData spineUpDown, hipsTwist, chest, head;
 
-    private Dictionary<eLandmark, Vector3> landmarks = new Dictionary<eLandmark, Vector3>();
+    private Dictionary<eLandmark, Vector3> landmarks;
 
     private Quaternion initialRotation;
     private Vector3 initialPosition;
     private Quaternion targetRot;
 
     private UdpReceiver udpReceiver;
-    private const int port = 5052;
+    
+    public void Activate(UdpReceiver receiver)
+    {
+        udpReceiver = receiver;
+    }
+
+    public void Deactivate()
+    {
+        udpReceiver = null;
+    }
 
     void Start()
     {
@@ -61,10 +70,6 @@ public class UnityChanPoseController : MonoBehaviour
             animator = this.GetComponent<Animator>();
             CalibrateFromPersistent();
         }
-
-        udpReceiver = new UdpReceiver(port);
-        udpReceiver.OnDataReceived += HandleReceivedData;
-        udpReceiver.Start();
     }
 
     public void CalibrateFromPersistent()
@@ -86,52 +91,13 @@ public class UnityChanPoseController : MonoBehaviour
         animator.enabled = false; // Animator를 비활성화하여 간섭을 방지합니다.
     }
 
-    void HandleReceivedData(string data)
-    {
-        string json = data;
-
-        // Debug.Log("Received data: " + json);
-
-        try
-        {
-            Dictionary<string, object> receivedDatas = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-            List<List<float>> receivedLandmarks = null;
-            if (receivedDatas.ContainsKey("pose"))
-            {
-                receivedLandmarks = JsonConvert.DeserializeObject<List<List<float>>>(receivedDatas["pose"].ToString());
-            }
-
-            if (receivedLandmarks != null)
-            {
-                lock (landmarks)
-                {
-                    landmarks.Clear(); // 이전 데이터를 지웁니다.
-                    for (int i = 0; i < receivedLandmarks.Count; i++)
-                    {
-                        List<float> kvp = receivedLandmarks[i];
-
-                        // 좌표 변환 (Y축 반전)
-                        float x = kvp[0];
-                        float y = -kvp[1];
-                        float z = kvp[2];
-                        Vector3 position = new Vector3(x, y, z);
-
-                        eLandmark landmarkKey = (eLandmark)i;
-                        landmarks[landmarkKey] = position;
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Error parsing data: " + ex.Message);
-        }
-    }
-
     void Update()
     {
-        lock (landmarks)
+        if (udpReceiver == null) return;
+
+        lock (MediapipeManager.Instance.bodyLandmarks)
         {
+            landmarks = MediapipeManager.Instance.bodyLandmarks;
             if (landmarks.Count == 0)
                 return;
 
@@ -196,11 +162,5 @@ public class UnityChanPoseController : MonoBehaviour
             return Vector3.zero;
         }
         return GetCurDirection(landmarks[lmChild], landmarks[lmParent]);
-    }
-
-    void OnApplicationQuit()
-    {
-        if (udpReceiver != null)
-            udpReceiver.Stop();
     }
 }
