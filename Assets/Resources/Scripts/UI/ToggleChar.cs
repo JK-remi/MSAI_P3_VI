@@ -46,11 +46,13 @@ public class ToggleChar : MonoBehaviour
             if(txtName_streaming != null)
             {
                 txtName_streaming.text = charInfo.Name;
+                charObj.GetComponent<Animator>().enabled = false;   
             }
 
             if(uiOwner != null)
             {
                 uiOwner.ChangeChar(charInfo);
+                charObj.GetComponent<Animator>().enabled = true;
             }
 
             MediapipeManager.Instance.ActivateCharacter(charObj);

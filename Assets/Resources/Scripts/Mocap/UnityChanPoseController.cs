@@ -88,7 +88,7 @@ public class UnityChanPoseController : MonoBehaviour
             head = calibrationData.head.ReconstructReferences();
         }
 
-        animator.enabled = false; // Animator를 비활성화하여 간섭을 방지합니다.
+        //animator.enabled = false; // Animator를 비활성화하여 간섭을 방지합니다.
     }
 
     void Update()
