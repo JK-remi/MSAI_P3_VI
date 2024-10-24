@@ -22,7 +22,7 @@ public class TTS_VoiceList : MonoBehaviour
 
     private VoiceData curVoice;
     public VoiceData CurVoice { get { return curVoice; } }
-    private List<VoiceData> voiceList = new List<VoiceData>();
+    public List<VoiceData> voiceList = new List<VoiceData>();
 
     public TMP_Dropdown dropdown_region;
     public TMP_Dropdown dropdown_Sex;
@@ -34,9 +34,31 @@ public class TTS_VoiceList : MonoBehaviour
     public Slider slider_rate;
     public Slider slider_volume;
 
-    void Start()
+    public void InitVoiceList()
     {
         StartCoroutine(GetVoiceList());
+    }
+
+    public void InitVoiceList(List<VoiceData> voices)
+    {
+        if (voiceList.Count > 0 || voices.Count == 0) return;
+
+        voiceList = voices;
+
+        List<string> regions = new List<string>();
+        List<string> names = new List<string>();
+        for (int i = 0; i < voices.Count; i++)
+        {
+            regions.Add(voices[i].LocaleName);
+            names.Add(voices[i].DisplayName);
+        }
+
+        SetDropdownOptions(dropdown_region, regions);
+        SetDropdownOptions(dropdown_Name, names);
+        if (voiceList.Count > 0)
+        {
+            curVoice = voiceList[0];
+        }
     }
 
     public void Init(CharInfo info)
@@ -87,21 +109,10 @@ public class TTS_VoiceList : MonoBehaviour
                 string subData = Utils.SubJsonString(json, "{", "}", 0, -1);
                 VoiceData voice = JsonUtility.FromJson<VoiceData>(subData);
                 voiceList.Add(voice);
-
-                if(regions.Count == 0 || regions.Contains(voice.LocaleName) == false)
-                {
-                    regions.Add(voice.LocaleName);
-                }
-                names.Add(voice.DisplayName);
                 json = Utils.SubString(json, "},", 2);
             }
 
-            SetDropdownOptions(dropdown_region, regions);
-            SetDropdownOptions(dropdown_Name, names);
-            if(voiceList.Count > 0)
-            {
-                curVoice = voiceList[0];
-            }
+            GameManager.Instance.OnFinishVoiceList();
         }
         else
         {

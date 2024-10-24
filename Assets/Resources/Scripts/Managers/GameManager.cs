@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     private AudioSource audioSource;
     private STT stt;
     private TTS tts;
+    private TTS_VoiceList voiceList;
     private GPT gpt;
     private bool isResponseEnd = false;
 
@@ -59,6 +60,8 @@ public class GameManager : MonoBehaviour
         stt = this.GetComponent<STT>();
         tts = this.GetComponent<TTS>();
         gpt = this.GetComponent<GPT>();
+        voiceList = this.GetComponent<TTS_VoiceList>();
+        voiceList.InitVoiceList();
 
         isResponseEnd = true;
 
@@ -153,6 +156,11 @@ public class GameManager : MonoBehaviour
 
         PanelBase prevPanel = curPanel;
         curPanel = uiObjects[(int)ui];
+
+        if(ui == ePanel.Create || ui == ePanel.Modify)
+        {
+            ((Panel_Create)curPanel).voiceList.InitVoiceList(voiceList.voiceList);
+        }
 
         if(prevPanel != null)
         {
@@ -299,5 +307,13 @@ public class GameManager : MonoBehaviour
     {
         gpt.Stop();
         isResponseEnd = true;
+    }
+
+    public void OnFinishVoiceList()
+    {
+        if (curPanel.uiType == ePanel.Create || curPanel.uiType == ePanel.Modify)
+        {
+            ((Panel_Create)curPanel).voiceList.InitVoiceList(voiceList.voiceList);
+        }
     }
 }

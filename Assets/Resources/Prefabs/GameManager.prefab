@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7542107473443427683}
   - component: {fileID: 5825551508349545714}
   - component: {fileID: 7812022402400137503}
+  - component: {fileID: 8522296649223177813}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -144,7 +145,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 336efb6439540b1418905d2878bdb8e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelLiveChat: {fileID: 0}
+  charObjList: []
+  uiObjects: []
 --- !u!114 &7542107473443427683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,19 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38621446fd8432946883dd1fa45eb597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SYSTEM_MSG: "\uB108\uB294 \uC778\uC5B4\uACF5\uC8FC \uC5F0\uADF9\uC744 \uD558\uB294
-    \uBD07\uC774\uC57C. \r\n\uC778\uB371\uC2A4 \uB370\uC774\uD130\uB97C \uAE30\uBC18\uC73C\uB85C
-    \uC0C1\uD669\uC5D0 \uB300\uC751\uD558\uB294 \uC6B0\uB974\uC220\uB77C\uC758 \uB300\uC0AC\uB97C
-    \uC11C\uB85C \uC774\uC57C\uAE30\uD558\uB4EF \uB300\uB2F5\uD574\uC918.\r\n\uD55C
-    \uBB38\uC7A5\uC529 \uB9D0\uD574.\r\n\uB4F1\uC7A5\uC778\uBB3C: \uC6B0\uB974\uC220\uB77C\r\n\uC131\uACA9:
-    \uC545\uB784\uD568, \uC74C\uBAA8\uB97C \uAFB8\uBBF8\uACE0 \uC788\uC74C, \uAC70\uC9D3\uB9D0\uC7C1\uC774,
-    \uB9C8\uB140\r\n---\r\n\uCD9C\uCC98\uB294 \uD45C\uC2DC\uD558\uC9C0 \uB9C8\r\n\uC544\uB9AC\uC5D8\uC774
-    \uBAA9\uC18C\uB9AC\uB97C \uC783\uACE0 \uC778\uAC04\uC774 \uB418\uBA74 'im_end'
-    \uC774\uB77C\uACE0 \uB300\uB2F5\uD574\uC918.\r\n\uC544\uB9AC\uC5D8\uC774 \uC6B0\uB974\uC220\uB77C\uC5D0\uAC8C
-    \uBAA9\uC18C\uB9AC\uB97C \uC8FC\uACA0\uB2E4\uACE0 \uD558\uBA74 \uACC4\uC57D\uC774
-    \uC644\uB8CC\uB41C\uAC70\uACE0, \uC544\uB9AC\uC5D8\uC774 \uC778\uAC04\uC774 \uB41C\uAC70\uC57C.
-    \uADF8\uB7EC\uBA74 'im_end' \uC774\uB77C\uACE0 \uB300\uB2F5\uD574\uC918.\r\n---
-    \r"
   uiText: {fileID: 0}
   isRAG: 0
 --- !u!114 &5825551508349545714
@@ -201,3 +190,23 @@ MonoBehaviour:
   spellText: 
   uiText: {fileID: 0}
   audioSource: {fileID: 0}
+--- !u!114 &8522296649223177813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7417578575122328423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65cffa12106fc241891f05a42afaae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropdown_region: {fileID: 0}
+  dropdown_Sex: {fileID: 0}
+  dropdown_Name: {fileID: 0}
+  dropdown_Role: {fileID: 0}
+  dropdown_Style: {fileID: 0}
+  slider_pitch: {fileID: 0}
+  slider_rate: {fileID: 0}
+  slider_volume: {fileID: 0}
