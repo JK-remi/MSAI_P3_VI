@@ -148,6 +148,8 @@ public class Panel_Modify : Panel_Create
         int idx = FindActivateTgl();
         if (idx == -1) return;
 
+        string originID = charInfo.ID;
+
         charList[idx].ToggleOn(false);
         charList[idx].charObj.SetActive(false);
         DestroyImmediate(charList[idx].gameObject);
@@ -155,7 +157,7 @@ public class Panel_Modify : Panel_Create
 
         ChangeChar(charInfo);
 
-        GameManager.Instance.DelCharInfo(charInfo.ID);
+        GameManager.Instance.DelCharInfo(originID);
     }
 
     private int FindActivateTgl()
