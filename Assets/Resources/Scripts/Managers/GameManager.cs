@@ -79,6 +79,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("send to GPT");
 
         gpt.uiText = response.txtMessage;
+        gpt.msgBox = response;
+        response.gameObject.SetActive(false);
         gpt.OnGPT(send.txtMessage.text);
     }
 
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                gpt.msgBox.gameObject.SetActive(true);
                 isResponseEnd = true;
                 ((Panel_Create)curPanel).OnResponse();
             }
@@ -128,7 +131,10 @@ public class GameManager : MonoBehaviour
         {
             isResponseEnd = true;
             if(curPanel.uiType == ePanel.Create || curPanel.uiType == ePanel.Modify)
+            {
+                //DestroyImmediate(gpt.msgBox.gameObject);
                 ((Panel_Create)curPanel).OnResponse();
+            }
         }
     }
 

@@ -158,6 +158,7 @@ public class GPT : MonoBehaviour
 
     [HideInInspector]
     public TextMeshProUGUI uiText;
+    public ChatMsg msgBox;
     private bool isProgress = false;
 
     [SerializeField]
