@@ -18513,7 +18513,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB2E4\uC74C"
+  m_text: "\uC800\uC7A5"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
   m_sharedMaterial: {fileID: -1457124853393199335, guid: ab9bf2972cd28014b96dd3f89832105f, type: 2}
