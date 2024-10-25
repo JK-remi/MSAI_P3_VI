@@ -90,7 +90,9 @@ public class Panel_Modify : Panel_Create
 
         // panel personal setting
         txtFileName.text = charInfo.FilePath;
+        txtPersonalTitle.text = charInfo.Name + Utils.PERSONALITY_TITLE;
         inputPersonality.text = charInfo.Personality;
+        txtFewshotTitle.text = charInfo.Name + Utils.FEWSHOT_TITLE;
         baseFewshot.Init(this, 0, charInfo);
         for (int i = 1; i < charInfo.Fewshots.Count; i++)
         {
