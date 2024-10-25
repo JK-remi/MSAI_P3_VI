@@ -193,7 +193,7 @@ public class GPT : MonoBehaviour
     private IEnumerator ChatgptResponse(string prompt)
     {
         isProgress = true;
-        uiText.text = "답변을 생성중입니다...\n잠시만 기다려 주세요.";
+        //uiText.text = "답변을 생성중입니다...\n잠시만 기다려 주세요.";
         // json 전송 참고
         // https://kumgo1d.tistory.com/entry/Unity-HttpWebRequest%EC%99%80-JsonUtility%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EC%97%AC-%EC%9B%B9-%EC%84%9C%EB%B2%84%EC%99%80-%ED%86%B5%EC%8B%A0%ED%95%98%EA%B3%A0-POST-%EB%B0%A9%EC%8B%9D%EC%9C%BC%EB%A1%9C-json-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
 
