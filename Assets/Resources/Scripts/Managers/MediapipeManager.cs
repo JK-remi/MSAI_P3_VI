@@ -51,6 +51,7 @@ public class MediapipeManager : MonoBehaviour
         if(curCharacter != null)
         {
             ActivateCharacter(curCharacter);
+            curCharacter.GetComponent<Animator>().enabled = false;
         }
     }
 
