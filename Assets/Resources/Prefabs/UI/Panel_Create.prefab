@@ -20561,6 +20561,7 @@ MonoBehaviour:
   baseFewshot: {fileID: 3150215333052886386}
   prefabFewshot: {fileID: 9053517075555393626, guid: c8642223421252c499e061605b87dbe5, type: 3}
   btnSave: {fileID: 1414598884348105891}
+  panelConv: {fileID: 4006054643298241171}
   sendPrefab: {fileID: 5949824645498423114, guid: f908d4d2b6afdb5449cbafe4f1c5965a, type: 3}
   responsePrefab: {fileID: -8066498472331279620, guid: ebb5bcc3080591e4a95eb674ba478fdd, type: 3}
   scrollChat: {fileID: 8783288680352522666}
