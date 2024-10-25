@@ -34,6 +34,8 @@ public class Panel_Modify : Panel_Create
         inputLine.text = Utils.BASE_LINE;
         GameManager.Instance.SetTTSLine(inputLine.text);
 
+        panelConv.SetActive(false);
+
         btnSave.interactable = false;
     }
 
@@ -100,6 +102,8 @@ public class Panel_Modify : Panel_Create
         }
 
         scrollFewshot.verticalNormalizedPosition = 0f;
+
+        OnConvOpen();
 
         btnSave.interactable = false;
     }
@@ -177,8 +181,36 @@ public class Panel_Modify : Panel_Create
         return idx;
     }
 
+    private string charID;
     public new void OnConvOpen()
     {
         GameManager.Instance.SetGPTInfo(GameManager.Instance.curCharInfo);
+
+        if(GameManager.Instance.curCharInfo.ID != charID)
+        {
+            charID = GameManager.Instance.curCharInfo.ID;
+            SetChatLog();
+        }
+    }
+
+    public override void OnConvClose()
+    {
+        base.OnConvClose();
+
+        charID = string.Empty;
+    }
+
+    private void SetChatLog()
+    {
+        List<Fewshot> chatLog = GameManager.Instance.GetChatLog();
+
+        for(int i=0; i<chatLog.Count; i++)
+        {
+            ChatMsg sendObj = Instantiate<ChatMsg>(sendPrefab, scrollChat.content);
+            sendObj.SetMessage(chatLog[i].q);
+
+            ChatMsg responseObj = Instantiate<ChatMsg>(responsePrefab, scrollChat.content);
+            responseObj.SetMessage(chatLog[i].a);
+        }
     }
 }

@@ -39,6 +39,7 @@ public class Panel_Create : PanelBase
     public UnityEngine.UI.Button btnSave;
 
     [Header("Panel_Conversaion")]
+    public GameObject panelConv;
     public ChatMsg sendPrefab;
     public ChatMsg responsePrefab;
     public ScrollRect scrollChat;
@@ -92,6 +93,9 @@ public class Panel_Create : PanelBase
         listFewshot.Add(baseFewshot);
 
         scrollFewshot.verticalNormalizedPosition = 0f;
+
+        // panel conv setting
+        panelConv.SetActive(false);
 
         btnSave.interactable = false;
     }
@@ -233,7 +237,7 @@ public class Panel_Create : PanelBase
         GameManager.Instance.SetGPTInfo(info);
     }
 
-    public void OnConvClose()
+    public virtual void OnConvClose()
     {
         foreach (Transform child in scrollChat.content)
         {

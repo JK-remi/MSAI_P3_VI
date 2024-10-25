@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private const string CHAR_INFO_FILE = "/data.json";
+    private const string CHAT_LOG_FILE = "chat.json";
     private const int CHAR_LIMIT = 6;
 
     private static GameManager _instance = null;
@@ -38,6 +39,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> charObjList = new List<GameObject>();
     private Dictionary<string, CharInfo> charDic = new Dictionary<string, CharInfo>();
+    private Dictionary<string, List<Fewshot>> chatDic = new Dictionary<string, List<Fewshot>>();
+    private Fewshot chatOneShot;
+
     public int curCharCnt { get { return charDic.Count; } }
     public CharInfo curCharInfo;
 
@@ -71,12 +75,19 @@ public class GameManager : MonoBehaviour
         LoadCharInfo();
     }
 
+    private string GetChatFilePath(string ID)
+    {
+        return Application.persistentDataPath + "/" + ID + CHAT_LOG_FILE;
+    }
+
     public void Send2GPT(ChatMsg send, ChatMsg response)
     {
         if (isResponseEnd == false) return;
 
         isResponseEnd = false;
         Debug.Log("send to GPT");
+
+        chatOneShot = new Fewshot(send.txtMessage.text, string.Empty);
 
         gpt.uiText = response.txtMessage;
         gpt.msgBox = response;
@@ -125,6 +136,11 @@ public class GameManager : MonoBehaviour
                 gpt.msgBox.gameObject.SetActive(true);
                 isResponseEnd = true;
                 ((Panel_Create)curPanel).OnResponse();
+
+                if(curPanel.uiType == ePanel.Modify)
+                {
+                    chatOneShot.a = gpt.uiText.text;
+                }
             }
         }
         else
@@ -133,8 +149,16 @@ public class GameManager : MonoBehaviour
             if(curPanel.uiType == ePanel.Create || curPanel.uiType == ePanel.Modify)
             {
                 //DestroyImmediate(gpt.msgBox.gameObject);
+                //chatOneShot.a = gpt.uiText.text;
                 ((Panel_Create)curPanel).OnResponse();
             }
+        }
+
+        if(curPanel.uiType == ePanel.Modify)
+        {
+            GetChatLog().Add(chatOneShot);
+            SaveChatLog();
+            chatOneShot = null;
         }
     }
 
@@ -214,6 +238,7 @@ public class GameManager : MonoBehaviour
         if(charDic.ContainsKey(info.ID) == false)
         {
             charDic.Add(info.ID, info);
+            chatDic.Add(info.ID, new List<Fewshot>());
 
             SaveCharInfo();
         }
@@ -227,6 +252,7 @@ public class GameManager : MonoBehaviour
         if (charDic.ContainsKey(info.ID) == true)
         {
             charDic[info.ID] = info;
+            chatDic[info.ID].Clear();
 
             SaveCharInfo();
         }
@@ -237,6 +263,13 @@ public class GameManager : MonoBehaviour
         if(charDic.ContainsKey(ID))
         {
             charDic.Remove(ID);
+            chatDic.Remove(ID);
+
+            string filePath = GetChatFilePath(ID);
+            if(File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
 
             SaveCharInfo();
         }
@@ -252,17 +285,40 @@ public class GameManager : MonoBehaviour
     {
         string json = JsonConvert.SerializeObject(charDic);
         File.WriteAllText(Application.persistentDataPath + CHAR_INFO_FILE, json);
+
+        SaveChatLog();
+    }
+
+    private void SaveChatLog()
+    {
+        foreach (var log in chatDic)
+        {
+            string chatFilePath = GetChatFilePath(log.Key);
+            string chatJson = JsonConvert.SerializeObject(log.Value);
+            File.WriteAllText(chatFilePath, chatJson);
+        }
     }
 
     private void LoadCharInfo()
     {
         string filePath = Application.persistentDataPath + CHAR_INFO_FILE;
-        if (File.Exists(filePath) == false) return;
+        if (File.Exists(filePath))
+        {
+            string json = File.ReadAllText(filePath);
+            charDic = JsonConvert.DeserializeObject<Dictionary<string, CharInfo>>(json);
+        }
 
-        string json = File.ReadAllText(filePath);
-        charDic = JsonConvert.DeserializeObject<Dictionary<string, CharInfo>>(json);
+        foreach(var key in charDic.Keys)
+        {
+            string chatFilePath = GetChatFilePath(key);
+            if (File.Exists(chatFilePath))
+            {
+                string chatJson = File.ReadAllText(chatFilePath);
+                chatDic.Add(key, JsonConvert.DeserializeObject<List<Fewshot>>(chatJson));
+            }
+        }
 
-        if(charDic.Count > 0)
+        if (charDic.Count > 0)
         {
             curCharInfo = charDic.Values.ElementAt<CharInfo>(0);
         }
@@ -316,6 +372,16 @@ public class GameManager : MonoBehaviour
 
         gpt.Init(info);
         tts.SetVoice(info.Voice);
+    }
+
+    public List<Fewshot> GetChatLog()
+    {
+        if (chatDic.ContainsKey(curCharInfo.ID) == false)
+        {
+            chatDic.Add(curCharInfo.ID, new List<Fewshot>());
+        }
+
+        return chatDic[curCharInfo.ID];
     }
 
     public void StopGPT()
