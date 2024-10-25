@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    private const string CHAR_INFO_FILE = "/data.json";
+    private const int CHAR_LIMIT = 6;
+
     private static GameManager _instance = null;
     public static GameManager Instance
     {
@@ -159,6 +162,13 @@ public class GameManager : MonoBehaviour
 
         if(ui == ePanel.Create || ui == ePanel.Modify)
         {
+            if(ui == ePanel.Create && curCharCnt >= CHAR_LIMIT)
+            {
+                OpenNotice(eNotice.CREATE_OVER);
+                curPanel = prevPanel;
+                return;
+            }
+
             ((Panel_Create)curPanel).voiceList.InitVoiceList(voiceList.voiceList);
         }
 
@@ -232,7 +242,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private const string CHAR_INFO_FILE = "/data.json";
     private void SaveCharInfo()
     {
         string json = JsonConvert.SerializeObject(charDic);
