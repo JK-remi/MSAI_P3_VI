@@ -62,16 +62,16 @@ sock_pose = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_hand = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_face = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 unity_pose_address = ('127.0.0.1', 5052)  # UnityChanPoseController용 포트
-unity_hand_address = ('127.0.0.1', 5053)  # MediapipeHandMapper용 포트
+unity_hand_address = ('127.0.0.1', 5053)  # 손 데이터용 포트
 unity_face_address = ('127.0.0.1', 5054)  # Face 데이터용 포트
 
 # 프레임 카운터 초기화
 frame_counter = 0
 
-# # 데이터 저장 디렉토리 생성
-# output_dir = os.path.join(current_dir, 'output_data')
-# if not os.path.exists(output_dir):
-#     os.makedirs(output_dir)
+# 데이터 저장 디렉토리 생성
+output_dir = os.path.join(current_dir, 'output_data')
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 # 표정 판정에 필요한 함수 및 데이터 정의
 # 각 표정에 대한 특징 벡터 정의 (값 조정)
@@ -354,10 +354,14 @@ while cap.isOpened():
         prev_blendshape_data.update(smoothed_mouth_shapes)
 
     # 손 랜드마크 처리
-    if hand_result.hand_landmarks:
-        for idx, hand_landmarks in enumerate(hand_result.hand_landmarks):
+    if hand_result.hand_landmarks and hand_result.handedness:
+        for idx, (hand_landmarks, handedness) in enumerate(zip(hand_result.hand_landmarks, hand_result.handedness)):
             hand_landmarks_list = [[lmk.x, lmk.y, lmk.z] for lmk in hand_landmarks]
-            data[f'hand_{idx}'] = hand_landmarks_list
+            hand_label = handedness[0].category_name.lower()  # 'left' 또는 'right' 반환
+            if hand_label == 'left':
+                data['hand_0'] = hand_landmarks_list
+            elif hand_label == 'right':
+                data['hand_1'] = hand_landmarks_list
 
             # NormalizedLandmarkList 생성 및 변환
             hand_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
@@ -425,8 +429,12 @@ while cap.isOpened():
             pass  # 변경됨: 포즈 데이터가 없을 때는 전송하지 않음
 
         # 손 데이터 전송
-        if 'hand_0' in data or 'hand_1' in data:
-            hand_data = {k: v for k, v in data.items() if k.startswith('hand_')}
+        hand_data = {}
+        if 'hand_0' in data:
+            hand_data['hand_0'] = data['hand_0']
+        if 'hand_1' in data:
+            hand_data['hand_1'] = data['hand_1']
+        if hand_data:
             json_hand_data = json.dumps(hand_data)
             sock_hand.sendto(json_hand_data.encode(), unity_hand_address)
 
