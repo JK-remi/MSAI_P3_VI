@@ -142,18 +142,7 @@ public class GPT : MonoBehaviour
 ";
     private const string GROUND_DATA = " 이 페르소나의 정보는 다음과 같아 :\n";
     private string RAG_MODEL = "b09_c2";
-    private string SYSTEM_MSG = @"
-너는 인어공주 연극을 하는 봇이야. 
-인덱스 데이터를 기반으로 상황에 대응하는 우르술라의 대사를 서로 이야기하듯 대답해줘.
-한 문장씩 말해.
-등장인물: 우르술라
-성격: 악랄함, 음모를 꾸미고 있음, 거짓말쟁이, 마녀
----
-출처는 표시하지 마
-아리엘이 목소리를 잃고 인간이 되면 'im_end' 이라고 대답해줘.
-아리엘이 우르술라에게 목소리를 주겠다고 하면 계약이 완료된거고, 아리엘이 인간이 된거야. 그러면 'im_end' 이라고 대답해줘.
---- 
-";
+    private string SYSTEM_MSG = "";
     private const int TIMEOUT = 10000;
 
     [HideInInspector]
@@ -189,7 +178,6 @@ public class GPT : MonoBehaviour
         SYSTEM_MSG = sys_msg;
         RAG_MODEL = rag;
     }
-
 
     private IEnumerator ChatgptResponse(string prompt)
     {
