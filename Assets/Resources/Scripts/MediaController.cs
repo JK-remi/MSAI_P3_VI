@@ -40,6 +40,17 @@ public class MediaController : MonoBehaviour
         {
             ToggleSpecialImage();
         }
+
+        // Added key mappings for next and previous actions
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            OnNext();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            OnPrevious();
+        }
     }
 
     public void OnNext()
@@ -138,12 +149,13 @@ public class MediaController : MonoBehaviour
         }
         else if (currentItem.mediaType == MediaItem.MediaType.Video)
         {
-            // 동영상 표시 (자동 재생하지 않음)
+            // 동영상 표시 및 자동 재생
             videoDisplay.gameObject.SetActive(true);
 
-            videoPlayer.Stop();                  // 동영상 재생 중지
             videoPlayer.clip = currentItem.video; // 동영상 클립 할당
-            // videoPlayer.Play();               // 자동 재생 코드 제거
+            videoPlayer.Play();                   // 동영상 자동 재생
+            isVideoPlaying = true;
+            isVideoPaused = false;
         }
     }
 
