@@ -136,7 +136,7 @@ public class UnityChanPoseController : MonoBehaviour
             float speed = 10f;
             hipsTwist.Tick(h * hipsTwist.initialRotation, speed);
             spineUpDown.Tick(s * spineUpDown.initialRotation, speed);
-            //chest.Tick(c * chest.initialRotation, speed);
+            chest.Tick(c * chest.initialRotation, speed);
             head.Tick(updown * twist * headr * head.initialRotation, speed);
         }
     }
