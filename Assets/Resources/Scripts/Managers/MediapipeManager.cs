@@ -42,6 +42,13 @@ public class MediapipeManager : MonoBehaviour
     public Dictionary<string, float> newBlendShapeWeights = new Dictionary<string, float>();
     public bool newExpressionData = false;
 
+    [Header("Temp")]
+    public GameObject sphere;
+    public List<GameObject> handLandmarks = new List<GameObject>(40);
+
+    public GameObject curCharacter;
+    private MediapipeHandMapper handMap;
+
     private void Awake()
     {
         ActivateUdpReceiver(BODY_PORT, HandleReceivedData_Body, out bodyUdpRecv);
@@ -53,6 +60,146 @@ public class MediapipeManager : MonoBehaviour
             ActivateCharacter(curCharacter);
             curCharacter.GetComponent<Animator>().enabled = false;
         }
+
+        for(int i=0; i<21*2; i++)
+        {
+            GameObject go = Instantiate(sphere, this.transform);
+            MeshRenderer mr = go.GetComponent<MeshRenderer>();
+            if (i < 21)
+            {
+                go.name = "LEFT_" + i;
+                mr.material.color = Color.red;
+            }
+            else
+            {
+                go.name = "RIGHT_" + i;
+                mr.material.color = Color.blue;
+            }
+
+            handLandmarks.Add(go);
+        }
+    }
+
+    private void Update()
+    {
+        if (handLandmarks.Count == 42)
+        {
+            // wrist (hand root)
+            handLandmarks[0].transform.position = handMap.leftRootBone.position;
+            // thumb
+            handLandmarks[1].transform.position = GetHandBonePos(handLandmarks[0].transform.position, 1, 0, GetBoneLength(handMap.leftThumbBones, 0, handMap.leftRootBone), true);
+            handLandmarks[2].transform.position = GetHandBonePos(handLandmarks[1].transform.position, 2, 1, GetBoneLength(handMap.leftThumbBones, 1, 0), true);
+            handLandmarks[3].transform.position = GetHandBonePos(handLandmarks[2].transform.position, 3, 2, GetBoneLength(handMap.leftThumbBones, 2, 1), true);
+            handLandmarks[4].transform.position = GetHandBonePos(handLandmarks[3].transform.position, 4, 3, GetBoneLength(handMap.leftThumbBones, 2, 1, 0.7f), true);
+            // index
+            handLandmarks[5].transform.position = GetHandBonePos(handLandmarks[0].transform.position, 5, 0, GetBoneLength(handMap.leftIndexBones, 0, handMap.leftRootBone), true);
+            handLandmarks[6].transform.position = GetHandBonePos(handLandmarks[5].transform.position, 6, 5, GetBoneLength(handMap.leftIndexBones, 1, 0), true);
+            handLandmarks[7].transform.position = GetHandBonePos(handLandmarks[6].transform.position, 7, 6, GetBoneLength(handMap.leftIndexBones, 2, 1), true);
+            handLandmarks[8].transform.position = GetHandBonePos(handLandmarks[7].transform.position, 8, 7, GetBoneLength(handMap.leftIndexBones, 2, 1, 0.7f), true);
+            // middle
+            handLandmarks[9].transform.position = GetHandBonePos(handLandmarks[0].transform.position, 9, 0, GetBoneLength(handMap.leftMiddleBones, 0, handMap.leftRootBone), true);
+            handLandmarks[10].transform.position = GetHandBonePos(handLandmarks[9].transform.position, 10, 9, GetBoneLength(handMap.leftMiddleBones, 1, 0), true);
+            handLandmarks[11].transform.position = GetHandBonePos(handLandmarks[10].transform.position, 11, 10, GetBoneLength(handMap.leftMiddleBones, 2, 1), true);
+            handLandmarks[12].transform.position = GetHandBonePos(handLandmarks[11].transform.position, 12, 11, GetBoneLength(handMap.leftMiddleBones, 2, 1, 0.7f), true);
+            // ring
+            handLandmarks[13].transform.position = GetHandBonePos(handLandmarks[0].transform.position, 13, 0, GetBoneLength(handMap.leftRingBones, 0, handMap.leftRootBone), true);
+            handLandmarks[14].transform.position = GetHandBonePos(handLandmarks[13].transform.position, 14, 13, GetBoneLength(handMap.leftRingBones, 1, 0), true);
+            handLandmarks[15].transform.position = GetHandBonePos(handLandmarks[14].transform.position, 15, 14, GetBoneLength(handMap.leftRingBones, 2, 1), true);
+            handLandmarks[16].transform.position = GetHandBonePos(handLandmarks[15].transform.position, 16, 15, GetBoneLength(handMap.leftRingBones, 2, 1, 0.7f), true);
+            // little
+            handLandmarks[17].transform.position = GetHandBonePos(handLandmarks[0].transform.position, 17, 0, GetBoneLength(handMap.leftLittleBones, 0, handMap.leftRootBone), true);
+            handLandmarks[18].transform.position = GetHandBonePos(handLandmarks[17].transform.position, 18, 17, GetBoneLength(handMap.leftLittleBones, 1, 0), true);
+            handLandmarks[19].transform.position = GetHandBonePos(handLandmarks[18].transform.position, 19, 18, GetBoneLength(handMap.leftLittleBones, 2, 1), true);
+            handLandmarks[20].transform.position = GetHandBonePos(handLandmarks[19].transform.position, 20, 19, GetBoneLength(handMap.leftLittleBones, 2, 1, 0.7f), true);
+
+            // wrist (hand root)
+            handLandmarks[21].transform.position = handMap.rightRootBone.position;
+            // thumb
+            handLandmarks[22].transform.position = GetHandBonePos(handLandmarks[21].transform.position, 1, 0, GetBoneLength(handMap.rightThumbBones, 0, handMap.rightRootBone), false);
+            handLandmarks[23].transform.position = GetHandBonePos(handLandmarks[22].transform.position, 2, 1, GetBoneLength(handMap.rightThumbBones, 1, 0), false);
+            handLandmarks[24].transform.position = GetHandBonePos(handLandmarks[23].transform.position, 3, 2, GetBoneLength(handMap.rightThumbBones, 2, 1), false);
+            handLandmarks[25].transform.position = GetHandBonePos(handLandmarks[24].transform.position, 4, 3, GetBoneLength(handMap.rightThumbBones, 2, 1, 0.7f), false);
+            // index
+            handLandmarks[26].transform.position = GetHandBonePos(handLandmarks[21].transform.position, 5, 0, GetBoneLength(handMap.rightIndexBones, 0, handMap.rightRootBone), false);
+            handLandmarks[27].transform.position = GetHandBonePos(handLandmarks[26].transform.position, 6, 5, GetBoneLength(handMap.rightIndexBones, 1, 0), false);
+            handLandmarks[28].transform.position = GetHandBonePos(handLandmarks[27].transform.position, 7, 6, GetBoneLength(handMap.rightIndexBones, 2, 1), false);
+            handLandmarks[29].transform.position = GetHandBonePos(handLandmarks[28].transform.position, 8, 7, GetBoneLength(handMap.rightIndexBones, 2, 1, 0.7f), false);
+            // middle
+            handLandmarks[30].transform.position = GetHandBonePos(handLandmarks[21].transform.position, 9, 0, GetBoneLength(handMap.rightMiddleBones, 0, handMap.rightRootBone), false);
+            handLandmarks[31].transform.position = GetHandBonePos(handLandmarks[30].transform.position, 10, 9, GetBoneLength(handMap.rightMiddleBones, 1, 0), false);
+            handLandmarks[32].transform.position = GetHandBonePos(handLandmarks[31].transform.position, 11, 10, GetBoneLength(handMap.rightMiddleBones, 2, 1), false);
+            handLandmarks[33].transform.position = GetHandBonePos(handLandmarks[32].transform.position, 12, 11, GetBoneLength(handMap.rightMiddleBones, 2, 1, 0.7f), false);
+            // ring
+            handLandmarks[34].transform.position = GetHandBonePos(handLandmarks[21].transform.position, 13, 0, GetBoneLength(handMap.rightRingBones, 0, handMap.rightRootBone), false);
+            handLandmarks[35].transform.position = GetHandBonePos(handLandmarks[34].transform.position, 14, 13, GetBoneLength(handMap.rightRingBones, 1, 0), false);
+            handLandmarks[36].transform.position = GetHandBonePos(handLandmarks[35].transform.position, 15, 14, GetBoneLength(handMap.rightRingBones, 2, 1), false);
+            handLandmarks[37].transform.position = GetHandBonePos(handLandmarks[36].transform.position, 16, 15, GetBoneLength(handMap.rightRingBones, 2, 1, 0.7f), false);
+            // little
+            handLandmarks[38].transform.position = GetHandBonePos(handLandmarks[21].transform.position, 17, 0, GetBoneLength(handMap.rightLittleBones, 0, handMap.rightRootBone), false);
+            handLandmarks[39].transform.position = GetHandBonePos(handLandmarks[38].transform.position, 18, 17, GetBoneLength(handMap.rightLittleBones, 1, 0), false);
+            handLandmarks[40].transform.position = GetHandBonePos(handLandmarks[39].transform.position, 19, 18, GetBoneLength(handMap.rightLittleBones, 2, 1), false);
+            handLandmarks[41].transform.position = GetHandBonePos(handLandmarks[40].transform.position, 20, 19, GetBoneLength(handMap.rightLittleBones, 2, 1, 0.7f), false);
+
+            if(handMap != null)
+            {
+                handMap.leftRootBone.rotation = UpdateWristRotation(true);
+                handMap.rightRootBone.rotation = UpdateWristRotation(false);
+            }
+        }
+    }
+
+    public Quaternion UpdateWristRotation(bool isLeft)
+    {
+        int rightIdx = isLeft ? 0 : 21;
+
+        Vector3 wristTransform = handLandmarks[0 + rightIdx].transform.position;
+        Vector3 indexFinger = handLandmarks[5 + rightIdx].transform.position;
+        Vector3 middleFinger = handLandmarks[9 + rightIdx].transform.position;
+
+        Vector3 vectorToMiddle = middleFinger - wristTransform;
+        Vector3 vectorToIndex = indexFinger - wristTransform;
+        //to get ortho vector of middle finger from index finger
+        Vector3.OrthoNormalize(ref vectorToMiddle, ref vectorToIndex);
+
+        //vector normal to wrist
+        Vector3 normalVector = Vector3.Cross(vectorToIndex, vectorToMiddle);
+        if(isLeft == false) normalVector = Vector3.Cross(vectorToMiddle, vectorToIndex);
+
+        Quaternion additionalRotation = Quaternion.Euler(180f, 0f, 0f);
+        //wristTransform.rotation = Quaternion.LookRotation(vectorToIndex, normalVector) * additionalRotation;
+        return Quaternion.LookRotation(vectorToIndex, normalVector) * additionalRotation;
+    }
+
+    private float GetBoneLength(List<Transform> bones, int head, int tail, float offset = 1f)
+    {
+        if (bones.Count <= tail) return 0f;
+
+        return GetBoneLength(bones, head, bones[tail]) * offset;
+    }
+
+    private float GetBoneLength(List<Transform> bones, int head, Transform tail)
+    {
+        if (bones.Count <= head) return 0f;
+
+        return (bones[head].position - tail.position).magnitude;
+    }
+
+    private Vector3 GetHandBonePos(Vector3 origin, int head, int tail, float length, bool isLeft)
+    {
+        if (isLeft && (leftHandLandmarks.Length <= head || leftHandLandmarks.Length <= tail)) return Vector3.zero;
+        if (!isLeft && (rightHandLandmarks.Length <= head || rightHandLandmarks.Length <= tail)) return Vector3.zero;
+
+        Vector3 vel = Vector3.zero;
+        if(isLeft)
+        {
+            vel = (leftHandLandmarks[head] - leftHandLandmarks[tail]).normalized;
+        }
+        else
+        {
+            vel = (rightHandLandmarks[head] - rightHandLandmarks[tail]).normalized;
+        }
+
+        return origin + (vel * length);
     }
 
     private void ActivateUdpReceiver(int port, UdpReceiver.DataReceivedHandler handler, out UdpReceiver receiver)
@@ -129,8 +276,8 @@ public class MediapipeManager : MonoBehaviour
                             {
                                 var point = handData[i];
                                 float x = point[0];
-                                float y = 1 - point[1];
-                                float z = -point[2];
+                                float y = -point[1];
+                                float z = point[2];
                                 landmarks[i] = new Vector3(x, y, z);
                             }
 
@@ -203,13 +350,12 @@ public class MediapipeManager : MonoBehaviour
         }
     }
 
-    public GameObject curCharacter;
     public void ActivateCharacter(GameObject go)
     {
         UnityChanPoseController body = go.GetComponent<UnityChanPoseController>();
         if (body) body.Activate(bodyUdpRecv);
-        MediapipeHandMapper hand = go.GetComponent<MediapipeHandMapper>();
-        if (hand) hand.Activate(handUdpRecv);
+        handMap = go.GetComponent<MediapipeHandMapper>();
+        if (handMap) handMap.Activate(handUdpRecv);
         ExpressionController face = go.GetComponent<ExpressionController>();
         if (face) face.Activate(faceUdpRecv);
 
@@ -220,8 +366,7 @@ public class MediapipeManager : MonoBehaviour
     {
         UnityChanPoseController body = go.GetComponent<UnityChanPoseController>();
         if (body) body.Deactivate();
-        MediapipeHandMapper hand = go.GetComponent<MediapipeHandMapper>();
-        if (hand) hand.Deactivate();
+        if (handMap) handMap.Deactivate();
         ExpressionController face = go.GetComponent<ExpressionController>();
         if (face) face.Deactivate();
     }

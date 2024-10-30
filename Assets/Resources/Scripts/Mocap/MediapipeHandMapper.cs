@@ -78,6 +78,7 @@ public class MediapipeHandMapper : MonoBehaviour
 
     void Update()
     {
+        return;
         if (udpReceiver == null) return;
 
         lock (MediapipeManager.Instance.handLockObj)
